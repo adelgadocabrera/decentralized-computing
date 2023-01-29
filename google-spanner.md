@@ -1,3 +1,4 @@
+# Google Spanner 
 Google Spanner is a "**scalable**, **multi-version**, **globally-distributed**, and **synchronously-replicated** **database**" designed, built and deployed at Google. It is designed to provide high availability and strong consistency - it is actually the first externally consistent distributed database at global scale.
 
 Expanding on the Google Spanner definition:
