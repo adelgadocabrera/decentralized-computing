@@ -24,6 +24,11 @@ Some additional techniques used:
 	- Data is moved across Paxos groups _directory_ by _directory_ - abstraction based on contiguous keys
 		- Allows for clients to describe data locality relationship 
 - **Two-Phase Locking** for serializability
+	- Strict two-phase locking for writes
+	- While holding locks, assign timestamp - rely on _TrueTime_ for commit timestamps 
+	- Some extra time is wait - commit wait - to compensate for the uncertainty time from _TrueTime_ 
+	- Then release locks
+	- This ensures that one transaction that happened after another one, will have a greater timestamp
 - **Two-Phase Commit** for cross-shard atomicity
 - **TrueTime** - its an API that exposes clock uncertainty. There are machines in every data-center with GPS receivers and atomic clocks with the sole purpose of keeping time synchronization between nodes
 	- Why so crucial? 
