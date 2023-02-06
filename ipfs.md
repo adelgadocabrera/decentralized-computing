@@ -1,4 +1,4 @@
-## IPFS - Content Addressed, Versioned, P2P File System (Draft 3)
+# IPFS - Content Addressed, Versioned, P2P File System (Draft 3)
 
 ## What is IPFS 
 
