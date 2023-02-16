@@ -8,4 +8,6 @@ A layer 2 solution for providing avatars on a blockchain platform could work as 
 4. To prevent fraud, the avatar data would be hashed and stored on-chain. This would ensure that the avatar data cannot be changed without being detected.
 5. The layer 2 solution would need to provide scalability and low transaction costs to make it feasible for users to create and customize their avatars.
 
+## Summary
+
 **Avatars** allow users to have more expressive and personalized on-chain identities, while also maintaining the security and trustlessness of the underlying blockchain platform.
