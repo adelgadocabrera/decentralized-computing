@@ -20,7 +20,8 @@ Consistency with No Slowdown Cascades
 - Observable Causal Consistency 
 	- Reminder of Causal Consistency  
     - Causal Consistency guarantees that each **client observes** a monotonically non-decreasing set of updates (including its own) in an order that respects potential causality between operations.
-**Observable Consistency Key Idea**
+
+### Observable Consistency Key Idea
 - Don't implement a causally consistent data store 
 - Let clients observe a causally consistent data store 
 
