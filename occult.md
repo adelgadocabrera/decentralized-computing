@@ -25,7 +25,7 @@ Consistency with No Slowdown Cascades
 - Don't implement a causally consistent data store 
 - Let clients observe a causally consistent data store 
 
-### Data flow
+### Features and data flow 
 - Writes are accepted at Master Shards and are replicated (without any waiting) asynchronously but in order to slaves
 - Each shard (master or slave) keeps track of a **shardstamp**
 - **Shardstamp** counts the writes applied to the shard
@@ -34,7 +34,7 @@ Consistency with No Slowdown Cascades
 - On replication causal timestamps are also sent
 - Causal timestamp is the number of writes a client knows of each shard
 
-### Example (slide 18)
+#### Example (slide 18)
 1. Client 1 with causal timestamp [4,3,2] writes w(a) to Master with shardstamp 7 
 2. Master updates shardstamp to 8 
 3. Master updates clients causal timestamp to [8,3,2] 
