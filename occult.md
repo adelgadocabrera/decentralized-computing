@@ -84,11 +84,11 @@ For a client $c$ performing a write $w$ in a transaction $T$:
 2. **Validation Phase**
 	- $c$ ensures that all read objects belong to a consistent snapshot using causal timestamps 
 	- $c$ locks every object part of a write in $T$ by contacting each shard s<sub>o</sub>  
-	- (concurrent reads are allowed in the meantime)
+	- (Concurrent reads are allowed in the meantime)
 	- If $c$ doesn't have exclusive write access, $c$ must restart this phase
 	- Upon locking shard master(s) responds with
 		1. $o$'s causal timestamp  
-		2. new shardstamp that will be assigned to $w$ 
+		2. New shardstamp that will be assigned to $w$ 
 1. **Commit Phase**
 	- $c$ computes $T$'s commit timestamp using prev shardstamps
 	- $c$ buffered writes committed in an observably atomic way all objects updated by $T$ 
