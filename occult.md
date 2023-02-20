@@ -75,15 +75,15 @@ Make causal timestamp (shardstamp vector) smaller by locating each sharstamp at 
 2. Transaction commit latency is independent of the number of replicas - replication async after committed on master
 
 #### Three Phase Protocol 
-For a client $c$ performing a write $w$ transaction $T$: 
+For a client $c$ performing a write $w$ in a transaction $T$: 
 
 1. **Read Phase** 
 	- $c$ obtains from the appropriate shards the objects $o$ that $T$ reads 
-	- (making sure their not stale values)
+	- (making sure they're not stale values)
 	- and $c$ locally buffers $T$'s writes 
 2. **Validation Phase**
 	- $c$ ensures that all read objects belong to a consistent snapshot using causal timestamps 
-	- locks every object part of a write in $T$ by contacting each shard s<sub>o</sub>  
+	- $c$ locks every object part of a write in $T$ by contacting each shard s<sub>o</sub>  
 	- (concurrent reads are allowed in the meantime)
 	- If $c$ doesn't have exclusive write access, $c$ must restart this phase
 	- Upon locking shard master(s) responds with
