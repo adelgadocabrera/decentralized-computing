@@ -1,21 +1,19 @@
 # Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications
 
-## Summary 
-
-### Intro
+## Overview
 
 Chord DHT (Distributed Hash Table) is a distributed lookup protocol for storing and retrieving key-value pairs in a peer-to-peer network. It is a ring-based overlay network that partitions data across multiple nodes designed to ensure efficient lookups and retrieval of data even in the presence of of node failures or network partitions. 
 
 It is a popular DHT implementation and fairly used in various applications such as p2p file sharing or distributed databases.
 
-### The 5 pillars of Chord:
+## The 5 pillars of Chord:
 - **Load balance** - Chord relies on consistent hashing algorithm to assign keys to nodes in the network. Acts as a natural load balancer. To ensure all peers actually participate in the storage of keys an implementation in conjunction with virtual nodes can take place.
 - **Decentralization** - no node/peer is more important than any other. *Same software running in all peers*.
 - **Scalability** - Chord makes use of *finger tables* for efficient lookups. *Finger tables* are data structures to keep track of other nodes in the network. The i<sub>th</sub> entry in a node's finger table contains the IP address and identifier of the node that succeeds the node by 2<sup>(i-1)</sup> on the identifier circle. Usage of *finger tables* results in $O(log N)$ lookups.
 - **Availability** - peers can join and leave (and crash/fail) the network. Chord leverages a set of *finger tables* (see **Scalability**) on the event of changes while maintaining an operational system (lookups should still work while peers join/leave). The automatic adjustment although not immediate is fast and always converges to a estable state.
 - **Flexible naming** - Chord protocol does not impose any restrictions on the format/structure of the keys used for lookups. As a result, applications that use Chord can use any naming convention without being constraint by Chord. 
 
-### Finger tables and lookups 
+## Finger tables and lookups 
 
 A peer maintains about a fixed number of nodes - *finger table*. The general equation for calculating the i<sub>th</sub> entry in a node's *finger table* is: 
 
@@ -29,7 +27,7 @@ Where:
 
 Each node maintains entries for its own identifier and the identifiers of its successors in the *finger table*
 
-### Calculating the finger table
+## Calculating the finger table
 
 A peer calculates the *finger table* in $O(log N)$ time complexity, where $N$ is the total number of nodes in the system. Here is how it works for the case of a peer joining the network:
 
