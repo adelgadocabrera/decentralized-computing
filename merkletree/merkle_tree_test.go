@@ -160,7 +160,7 @@ func TestTenNodes(t *testing.T) {
 
 func TestDeleteHangingRight(t *testing.T) {
 	fmt.Println()
-	fmt.Println("Delete leaf on 3 node merkle tree")
+	fmt.Println("Delete leaf 3 on 3 node merkle tree")
 	fmt.Println()
 	merkleTree := nLeafTree(3)
 	entry := merkleTree.rootNode.right.left
@@ -172,7 +172,7 @@ func TestDeleteHangingRight(t *testing.T) {
 
 func TestDeleteHangingRight2(t *testing.T) {
 	fmt.Println()
-	fmt.Println("Delete leaf on 5 node merkle tree")
+	fmt.Println("Delete leaf 5 on 5 node merkle tree")
 	fmt.Println()
 	merkleTree := nLeafTree(5)
 	entry := merkleTree.rootNode.right.left.left
@@ -181,4 +181,18 @@ func TestDeleteHangingRight2(t *testing.T) {
 	fmt.Println()
 	fmt.Println("Node 5 deleted")
 	merkleTree.Print()
+}
+
+func TestDeleteLeafLeftSide(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Delete leaf 3 on 5 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(5)
+	entry := merkleTree.rootNode.left.right.left
+	fmt.Printf("entry %s\n\n", string(entry.leaf.Value))
+	merkleTree.Print()
+	merkleTree.Delete(entry.leaf)
+	// fmt.Println()
+	// fmt.Println("Node 5 deleted")
+	// merkleTree.Print()
 }

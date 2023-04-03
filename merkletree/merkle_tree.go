@@ -3,6 +3,7 @@ package merkletree
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -185,6 +186,15 @@ func (mt *MerkleTree) Insert(entry *MerkleEntry) ([32]byte, error) {
 }
 
 func (mt *MerkleTree) Delete(entry *MerkleEntry) ([32]byte, error) {
+	// only 1 node
+	if len(mt.leaves) == 1 {
+		mt.rootNode = nil
+		mt.rootHash = [32]byte{}
+		mt.depth = 0
+		mt.leaves = []*MerkleNode{}
+		return mt.rootHash, nil
+	}
+
 	// deleting the only node on right side
 	if int(math.Pow(2, float64(mt.depth-1))/2)+1 == len(mt.leaves) &&
 		mt.digestEntry(entry) == mt.rootNode.right.value &&
@@ -200,14 +210,45 @@ func (mt *MerkleTree) Delete(entry *MerkleEntry) ([32]byte, error) {
 		}
 	}
 
-	location, found := mt.findLeaf(mt.rootNode, entry)
-	if found {
-		fmt.Println("Found entry!")
-		for _, node := range location {
-			fmt.Printf("Node %x...\n", node.value[:8])
+	var leaves []*MerkleNode
+	// var pendingLeaves []*MerkleNode
+	var isLeftSide bool
+	for i, leaf := range mt.leaves {
+		if mt.entriesEqual(leaf.leaf, entry) {
+			leaves = mt.leaves[:i]
+			// pendingLeaves = mt.leaves[i+1:]
+			if i < int(math.Pow(2, float64(mt.depth-1))/2) {
+				isLeftSide = true
+			}
+			break
 		}
+	}
+
+	location, found := mt.findLeaf(mt.rootNode, entry)
+	if !found {
+		return [32]byte{}, errors.New("Something went wrong searching entry")
+	}
+	target := location[len(location)-1]
+	for i := len(location) - 1; i > 0; i-- {
+		loc := location[i]
+		if loc.left == target {
+			loc.left = loc.right
+			loc.right = nil
+			continue
+		}
+		loc.right = nil
+	}
+	if isLeftSide {
+		mt.rootNode = mt.rootNode.left
+		mt.rootHash = mt.rootNode.left.value
+		mt.depth = mt.depth - 1
+		mt.leaves = leaves
+
+		// for _, node := range pendingLeaves {
+		// 	mt.Insert(node.leaf)
+		// }
 	} else {
-		fmt.Println("Did not find entry!")
+
 	}
 	return [32]byte{}, nil
 }
