@@ -117,11 +117,10 @@ func (mt *MerkleTree) Insert(entry *MerkleEntry) ([32]byte, error) {
 			n := mt.NewNode(leaf, nil)
 			if i == 0 {
 				node.right = n
-				node = n
 			} else {
 				node.left = n
-				node = n
 			}
+			node = n
 		}
 		mt.rootNode = newRoot
 		mt.rootHash = newRoot.value
@@ -274,26 +273,26 @@ func (mt *MerkleTree) GenerateMerklePath(entry *MerkleEntry) ([][32]byte, bool) 
 	}
 
 	merklePath := [][32]byte{}
-	lastHash := locations[len(locations)-1].value
+	visitedNode := locations[len(locations)-1].value
 	for i := len(locations) - 2; i >= 0; i-- {
 		node := locations[i]
 
-		if node.value == lastHash || node.right == nil {
-			lastHash = node.value
+		if node.value == visitedNode || node.right == nil {
+			visitedNode = node.value
 			continue // skip intermediate nodes
 		}
 
-		if node.right.value == lastHash {
+		if node.right.value == visitedNode {
 			merklePath = append(merklePath, node.left.value)
 		} else {
 			merklePath = append(merklePath, node.right.value)
 		}
-		lastHash = node.value
+		visitedNode = node.value
 	}
 
 	return merklePath, true
-
 }
+
 func (mt *MerkleTree) VerifyMerklePath(*MerkleEntry, int, [][32]byte) bool {
 	return true
 }
