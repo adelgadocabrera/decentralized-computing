@@ -158,6 +158,32 @@ func TestTenNodes(t *testing.T) {
 	fmt.Println()
 }
 
+func TestDeleteSmallTree2(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Delete leaf 1 on 2 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(2)
+	entry := merkleTree.rootNode.left
+	merkleTree.Print()
+	merkleTree.Delete(entry.leaf)
+	fmt.Println()
+	fmt.Println("Node 1 deleted")
+	merkleTree.Print()
+}
+
+func TestDeleteSmallTree(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Delete leaf 2 on 2 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(2)
+	entry := merkleTree.rootNode.right
+	merkleTree.Print()
+	merkleTree.Delete(entry.leaf)
+	fmt.Println()
+	fmt.Println("Node 2 deleted")
+	merkleTree.Print()
+}
+
 func TestDeleteHangingRight(t *testing.T) {
 	fmt.Println()
 	fmt.Println("Delete leaf 3 on 3 node merkle tree")
@@ -166,6 +192,7 @@ func TestDeleteHangingRight(t *testing.T) {
 	entry := merkleTree.rootNode.right.left
 	merkleTree.Print()
 	merkleTree.Delete(entry.leaf)
+	fmt.Println()
 	fmt.Println("Node 3 deleted")
 	merkleTree.Print()
 }
@@ -192,7 +219,84 @@ func TestDeleteLeafLeftSide(t *testing.T) {
 	fmt.Printf("entry %s\n\n", string(entry.leaf.Value))
 	merkleTree.Print()
 	merkleTree.Delete(entry.leaf)
-	// fmt.Println()
-	// fmt.Println("Node 5 deleted")
-	// merkleTree.Print()
+	fmt.Println()
+	fmt.Println("Node 3 deleted")
+	merkleTree.Print()
+}
+
+func TestDeleteLeafRightSide(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Delete leaf 6 on 6 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(6)
+	entry := merkleTree.rootNode.right.left.right
+	fmt.Printf("entry %s\n\n", string(entry.leaf.Value))
+	merkleTree.Print()
+	merkleTree.Delete(entry.leaf)
+	fmt.Println()
+	fmt.Println("Node 6 deleted")
+	merkleTree.Print()
+}
+
+func TestMerklePath(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Merkle Path on 6 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(6)
+	entry := merkleTree.rootNode.right.left.right
+	fmt.Printf("Entry %s\n\n", string(entry.leaf.Value))
+	merkleTree.Print()
+	merklePath, ok := merkleTree.GenerateMerklePath(entry.leaf)
+	if !ok {
+		fmt.Println()
+		fmt.Println("Something went wrong calculating merkle path")
+		fmt.Println()
+	}
+	fmt.Println()
+	fmt.Println("Merkle Path:")
+	for i := 0; i < len(merklePath); i++ {
+		fmt.Printf("Node %d: %x...\n", i, merklePath[i][:8])
+	}
+	fmt.Println()
+	merkleTree.Print()
+}
+
+func TestMerklePathBig(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Merkle Path on 6 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(15)
+	entry := merkleTree.rootNode.left.right.right.left
+	fmt.Printf("Entry %s\n\n", string(entry.leaf.Value))
+	merklePath, ok := merkleTree.GenerateMerklePath(entry.leaf)
+	if !ok {
+		fmt.Println()
+		fmt.Println("Something went wrong calculating merkle path")
+		fmt.Println()
+	}
+
+	first := merkleTree.rootNode.left.right.right.right.value
+	second := merkleTree.rootNode.left.right.left.value
+	third := merkleTree.rootNode.left.left.value
+	forth := merkleTree.rootNode.right.value
+
+	merkleTree.Print()
+
+	fmt.Printf("\nFirst: %x...\n", first[:8])
+	fmt.Printf("Second: %x...\n", second[:8])
+	fmt.Printf("Third: %x...\n", third[:8])
+	fmt.Printf("Forth: %x...\n\n", forth[:8])
+
+	if first != merklePath[0] {
+		t.Errorf("\nFirst node in merkle path incorrect, \n > expected %x... \n > got %x\n", first[:8], merklePath[0][:8])
+	}
+	if second != merklePath[1] {
+		t.Errorf("\nSecond node in merkle path incorrect, \n > expected %x... \n > got %x\n", second[:8], merklePath[1][:8])
+	}
+	if third != merklePath[2] {
+		t.Errorf("\nThird node in merkle path incorrect, \n > expected %x... \n > got %x\n", third[:8], merklePath[2][:8])
+	}
+	if forth != merklePath[3] {
+		t.Errorf("\nForth node in merkle path incorrect, \n > expected %x... \n > got %x\n", forth[:8], merklePath[3][:8])
+	}
 }

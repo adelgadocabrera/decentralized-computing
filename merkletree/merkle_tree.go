@@ -195,6 +195,22 @@ func (mt *MerkleTree) Delete(entry *MerkleEntry) ([32]byte, error) {
 		return mt.rootHash, nil
 	}
 
+	// case 2 nodes
+	if len(mt.leaves) == 2 {
+		if mt.entriesEqual(entry, mt.rootNode.left.leaf) {
+			mt.rootNode = mt.rootNode.right
+			mt.rootHash = mt.rootNode.value
+			mt.depth = 1
+			mt.leaves = []*MerkleNode{mt.rootNode}
+			return mt.rootHash, nil
+		}
+		mt.rootNode = mt.rootNode.left
+		mt.rootHash = mt.rootNode.value
+		mt.depth = 1
+		mt.leaves = []*MerkleNode{mt.rootNode}
+		return mt.rootHash, nil
+	}
+
 	// deleting the only node on right side
 	if int(math.Pow(2, float64(mt.depth-1))/2)+1 == len(mt.leaves) &&
 		mt.digestEntry(entry) == mt.rootNode.right.value &&
@@ -211,14 +227,14 @@ func (mt *MerkleTree) Delete(entry *MerkleEntry) ([32]byte, error) {
 	}
 
 	var leaves []*MerkleNode
-	// var pendingLeaves []*MerkleNode
-	var isLeftSide bool
+	var pendingLeaves []*MerkleNode
+	var isOnLeftSide bool
 	for i, leaf := range mt.leaves {
 		if mt.entriesEqual(leaf.leaf, entry) {
 			leaves = mt.leaves[:i]
-			// pendingLeaves = mt.leaves[i+1:]
+			pendingLeaves = mt.leaves[i+1:]
 			if i < int(math.Pow(2, float64(mt.depth-1))/2) {
-				isLeftSide = true
+				isOnLeftSide = true
 			}
 			break
 		}
@@ -238,23 +254,43 @@ func (mt *MerkleTree) Delete(entry *MerkleEntry) ([32]byte, error) {
 		}
 		loc.right = nil
 	}
-	if isLeftSide {
+	if isOnLeftSide {
 		mt.rootNode = mt.rootNode.left
 		mt.rootHash = mt.rootNode.left.value
 		mt.depth = mt.depth - 1
 		mt.leaves = leaves
 
-		// for _, node := range pendingLeaves {
-		// 	mt.Insert(node.leaf)
-		// }
-	} else {
-
+		for _, node := range pendingLeaves {
+			mt.Insert(node.leaf)
+		}
 	}
 	return [32]byte{}, nil
 }
 
-func (mt *MerkleTree) GenerateMerklePath(*MerkleEntry) ([][32]byte, bool) {
-	return [][32]byte{}, true
+func (mt *MerkleTree) GenerateMerklePath(entry *MerkleEntry) ([][32]byte, bool) {
+	locations, found := mt.findLeaf(mt.rootNode, entry)
+	if !found {
+		return [][32]byte{}, false
+	}
+
+	merklePath := [][32]byte{}
+	lastHash := locations[len(locations)-1].value
+	for i := len(locations) - 2; i >= 0; i-- {
+		node := locations[i]
+
+		if node.right == nil {
+			continue // skip intermediate nodes
+		}
+
+		if node.right.value == lastHash {
+			merklePath = append(merklePath, node.left.value)
+		} else {
+			merklePath = append(merklePath, node.right.value)
+		}
+		lastHash = node.value
+	}
+
+	return merklePath, true
 }
 
 func (mt *MerkleTree) VerifyMerklePath(*MerkleEntry, int, [][32]byte) bool {
