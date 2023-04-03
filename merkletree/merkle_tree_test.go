@@ -282,11 +282,6 @@ func TestMerklePathBig(t *testing.T) {
 
 	merkleTree.Print()
 
-	fmt.Printf("\nFirst: %x...\n", first[:8])
-	fmt.Printf("Second: %x...\n", second[:8])
-	fmt.Printf("Third: %x...\n", third[:8])
-	fmt.Printf("Forth: %x...\n\n", forth[:8])
-
 	if first != merklePath[0] {
 		t.Errorf("\nFirst node in merkle path incorrect, \n > expected %x... \n > got %x\n", first[:8], merklePath[0][:8])
 	}
@@ -298,5 +293,36 @@ func TestMerklePathBig(t *testing.T) {
 	}
 	if forth != merklePath[3] {
 		t.Errorf("\nForth node in merkle path incorrect, \n > expected %x... \n > got %x\n", forth[:8], merklePath[3][:8])
+	}
+}
+
+func TestMerklePathBig2(t *testing.T) {
+	fmt.Println()
+	fmt.Println("Merkle Path on 6 node merkle tree")
+	fmt.Println()
+	merkleTree := nLeafTree(12)
+	entry := merkleTree.rootNode.right.left.right.right
+	fmt.Printf("Entry %s\n\n", string(entry.leaf.Value))
+	merklePath, ok := merkleTree.GenerateMerklePath(entry.leaf)
+	if !ok {
+		fmt.Println()
+		fmt.Println("Something went wrong calculating merkle path")
+		fmt.Println()
+	}
+
+	first := merkleTree.rootNode.right.left.right.left.value
+	second := merkleTree.rootNode.right.left.left.value
+	third := merkleTree.rootNode.left.value
+
+	merkleTree.Print()
+
+	if first != merklePath[0] {
+		t.Errorf("\nFirst node in merkle path incorrect, \n > expected %x... \n > got %x\n", first[:8], merklePath[0][:8])
+	}
+	if second != merklePath[1] {
+		t.Errorf("\nSecond node in merkle path incorrect, \n > expected %x... \n > got %x\n", second[:8], merklePath[1][:8])
+	}
+	if third != merklePath[2] {
+		t.Errorf("\nThird node in merkle path incorrect, \n > expected %x... \n > got %x\n", third[:8], merklePath[2][:8])
 	}
 }

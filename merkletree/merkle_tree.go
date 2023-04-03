@@ -278,7 +278,8 @@ func (mt *MerkleTree) GenerateMerklePath(entry *MerkleEntry) ([][32]byte, bool) 
 	for i := len(locations) - 2; i >= 0; i-- {
 		node := locations[i]
 
-		if node.right == nil {
+		if node.value == lastHash || node.right == nil {
+			lastHash = node.value
 			continue // skip intermediate nodes
 		}
 
@@ -291,8 +292,8 @@ func (mt *MerkleTree) GenerateMerklePath(entry *MerkleEntry) ([][32]byte, bool) 
 	}
 
 	return merklePath, true
-}
 
+}
 func (mt *MerkleTree) VerifyMerklePath(*MerkleEntry, int, [][32]byte) bool {
 	return true
 }
