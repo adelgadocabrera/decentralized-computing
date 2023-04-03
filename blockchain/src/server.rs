@@ -5,6 +5,8 @@ use blockchain::{BtcPaymentResponse, BtcPaymentRequest};
 use blockchain::{ValidationRequest, ValidationResponse};
 
 pub mod blockchain {
+    mod merkle;
+
     tonic::include_proto!("blockchain");
 }
 
