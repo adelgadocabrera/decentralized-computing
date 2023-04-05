@@ -297,6 +297,7 @@ func (mt *MerkleTree) VerifyMerklePath(*MerkleEntry, int, [][32]byte) bool {
 	return true
 }
 
+// Inefficient method - O(n) traverses the entire tree in search for the entry.
 func (mt *MerkleTree) findLeaf(node *MerkleNode, entry *MerkleEntry) ([]*MerkleNode, bool) {
 	if node == nil {
 		return nil, false
