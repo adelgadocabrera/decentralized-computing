@@ -1,0 +1,45 @@
+syntax = "proto3";
+package protos;
+
+service TransactionExchange {
+    rpc SendTransaction (Transaction) returns (TransactionResponse) {};
+    rpc Validate (ValidationRequest) returns (ValidationResponse) {};
+}
+
+message Block {
+    BlockHeader header                = 1;
+    repeated Transaction transactions = 2;
+    uint64 block_index                = 3;
+    bytes  merkle_root                = 4;
+    uint64 difficulty                 = 5;
+    bytes  block_hash                 = 6;
+    string data                       = 7;
+    uint64 pow                        = 8;
+}
+
+message BlockHeader {
+    uint64 timestamp        = 1;
+    uint64 nonce            = 2;
+    bytes  previous_hash    = 3;
+}
+
+
+message Transaction {
+    string from_addr        = 1;
+    string to_addr          = 2;
+    uint32 amount           = 3;
+    string additional_data  = 4;
+}
+
+message TransactionResponse {
+    bool   successful = 1;
+    string message    = 2;
+    oneof data {
+      Transaction transaction = 3;
+      ValidationRequest validation_request = 4;
+    }
+}
+
+message ValidationRequest {}
+
+message ValidationResponse {}

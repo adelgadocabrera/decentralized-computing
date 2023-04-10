@@ -1,0 +1,20 @@
+[package]
+name = "rustchain"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+name = "rustchain"
+
+[dependencies]
+tonic = "0.9"
+prost = "0.11"
+tokio = { version = "1.26", features = ["macros", "rt-multi-thread"] }
+sha2 = "0.10.6"
+hex-literal = "0.3.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hex = "0.4.3"
+
+[build-dependencies]
+tonic-build = "0.9"

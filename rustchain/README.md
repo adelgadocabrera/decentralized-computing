@@ -6,7 +6,6 @@ Blockchain is a distributed data structure with special properties, such as tamp
 
 - Cryptographic hash functions 
 - Merkle Tree (for data integrity and membership test) 
-- Merkle Patricia Trie 
 - Consensus
 - Crash tolerant consensus 
 - Public-key cryptography 
@@ -74,3 +73,34 @@ The body of an Ethereum block contains the list of uncle block headers and a lis
 - Transactions: This is a list of actual Ethereum transactions stored in the block.
 
 
+```proto
+message Block {
+  BlockHeader header = 1;
+  BlockBody body = 2;
+}
+
+message BlockHeader {
+  bytes parent_block_hash = 1;
+  bytes uncle_block_hash = 2;
+  bytes beneficiary_addr = 3;
+  bytes state_root = 4;
+  bytes tx_root = 5;
+  bytes receipt_root = 6;
+  uint64 block_num = 7;
+  uint32 gas_limit = 8;
+  uint32 gas_used = 9;
+  uint32 difficulty = 10;
+  uint32 mix_hash = 11;
+  uint64 timestamp = 12;
+  uint32 base_fee_per_gas = 13;
+  bytes extra_data = 14;
+}
+
+message BlockBody {
+  repeated BlockHeader uncle_block_headers = 1;
+  repeated Transaction transactions = 2;
+}
+
+message Transaction {
+}
+```
