@@ -15,7 +15,6 @@ async fn test_payment() -> Result<(), Box<dyn Error>> {
         .parse()
         .unwrap();
     let peer_server = PeerServer::new(addr);
-
     let server_handle = tokio::spawn(async { peer_server.serve().await });
 
     // buffer time

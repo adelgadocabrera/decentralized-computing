@@ -1,7 +1,20 @@
+use std::fmt;
 use std::sync::{Arc, Mutex};
 
+#[derive(Clone)]
 pub struct ConcurrentVec<T> {
     data: Arc<Mutex<Vec<T>>>,
+}
+
+#[macro_export]
+macro_rules! concurrentvec {
+    ($($item:expr),*) => {{
+        let vec = ConcurrentVec::new();
+        $(
+            vec.push($item);
+        )*
+        vec
+    }};
 }
 
 impl<T: Clone> ConcurrentVec<T> {
@@ -38,13 +51,16 @@ impl<T: Clone> ConcurrentVec<T> {
     }
 }
 
-#[macro_export]
-macro_rules! concurrentvec {
-    ($($item:expr),*) => {{
-        let vec = ConcurrentVec::new();
-        $(
-            vec.push($item);
-        )*
-        vec
-    }};
+impl<T: fmt::Display + Clone> fmt::Display for ConcurrentVec<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let data = self.data.lock().unwrap();
+        write!(f, "[")?;
+        for (i, item) in data.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", item)?;
+        }
+        write!(f, "]")
+    }
 }

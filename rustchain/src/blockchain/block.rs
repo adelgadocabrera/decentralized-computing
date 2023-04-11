@@ -30,7 +30,7 @@ pub fn next_block(
     difficulty: u64,
     pow: u64,
 ) -> Block {
-    let block_index = last_block.block_index + 1;
+    let block_index = last_block.header.as_ref().unwrap().block_index + 1;
     let previous_hash = last_block.to_owned().block_hash;
     return new_block(
         previous_hash,
@@ -61,12 +61,12 @@ fn new_block(
     block_header.timestamp = timestamp;
     block_header.nonce = nonce;
     block_header.previous_hash = previous_hash;
+    block_header.block_index = block_index;
+    block_header.merkle_root = merkle_root.try_into().unwrap();
 
     let mut block = Block::default();
     block.header = Some(block_header);
     block.transactions = transactions;
-    block.block_index = block_index;
-    block.merkle_root = merkle_root.try_into().unwrap();
     block.block_hash = block.hash_block();
     block.difficulty = difficulty;
     block.pow = pow;
@@ -75,18 +75,20 @@ fn new_block(
 
 impl Block {
     fn hash_block(&self) -> Vec<u8> {
+        let header = self.header.to_owned().unwrap();
         let mut hasher = Sha256::new();
-        hasher.update(self.block_index.to_le_bytes());
-        hasher.update(self.header.to_owned().unwrap().timestamp.to_le_bytes());
-        hasher.update(&self.header.to_owned().unwrap().previous_hash);
-
-        // TODO:: finish hashing
-        return hasher.finalize().to_vec();
+        hasher.update(header.timestamp.to_le_bytes());
+        hasher.update(header.nonce.to_le_bytes());
+        hasher.update(header.previous_hash);
+        hasher.update(header.block_index.to_le_bytes());
+        hasher.update(header.merkle_root);
+        hasher.finalize().to_vec()
     }
 }
 
 impl std::fmt::Display for Block {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let header = self.header.to_owned().unwrap();
         let shrunk_previous_hash = self
             .header
             .to_owned()
@@ -104,7 +106,7 @@ impl std::fmt::Display for Block {
             .take(10)
             .collect::<Vec<u8>>();
 
-        let shrunk_merkle_root = self
+        let shrunk_merkle_root = header
             .merkle_root
             .iter()
             .cloned()
@@ -112,7 +114,7 @@ impl std::fmt::Display for Block {
             .collect::<Vec<u8>>();
 
         let title: String;
-        if self.block_index == 0 {
+        if header.block_index == 0 {
             title = String::from(
                 "
 Genesis Block
@@ -123,7 +125,7 @@ Genesis Block
                 "
 Block {}
 --------",
-                self.block_index
+                header.block_index
             ));
         }
         let block = format!(
@@ -144,7 +146,7 @@ block_hash:             {}...,
             self.header.to_owned().unwrap().nonce,
             hex::encode(shrunk_previous_hash),
             self.transactions.len(),
-            self.block_index,
+            header.block_index,
             hex::encode(shrunk_merkle_root),
             self.difficulty,
             hex::encode(shrunk_hash),
@@ -162,7 +164,7 @@ mod tests {
     #[test]
     fn test_genesis_block() {
         let genesis: Block = create_genesis_block();
-        assert_eq!(0, genesis.block_index);
+        assert_eq!(0, genesis.header.unwrap().block_index);
     }
 
     #[test]
@@ -173,9 +175,9 @@ mod tests {
         let merkle_root: [u8; 32] = [0; 32];
         let difficulty: u64 = 0;
         let pow: u64 = 9;
-        let new_block: Block =
-            next_block(&genesis, nonce, transactions, merkle_root, difficulty, pow);
-        assert_eq!(genesis.block_hash, new_block.header.unwrap().previous_hash);
-        assert_eq!(1, new_block.block_index);
+        let new_block = next_block(&genesis, nonce, transactions, merkle_root, difficulty, pow);
+        let header = new_block.header.unwrap();
+        assert_eq!(genesis.block_hash, header.previous_hash);
+        assert_eq!(1, header.block_index);
     }
 }

@@ -11,6 +11,7 @@ pub use tonic::{transport::Server, Request, Response, Status};
 struct TransactionService {}
 
 pub struct PeerServer {
+    server: Option<Server>,
     router: Option<Router>,
     addr: SocketAddr,
 }
@@ -22,6 +23,7 @@ impl PeerServer {
         let mut server = Server::builder();
         let router = server.add_service(TransactionExchangeServer::new(payment_service));
         return PeerServer {
+            server: Some(server),
             router: Some(router),
             addr,
         };
