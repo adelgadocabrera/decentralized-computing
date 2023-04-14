@@ -5,6 +5,7 @@ use std::error::Error;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::time::sleep;
+use protos::rc_response::Data::{Transaction, ValidationRequest, Block};
 
 #[tokio::test]
 async fn test_payment() -> Result<(), Box<dyn Error>> {
@@ -37,12 +38,13 @@ async fn test_payment() -> Result<(), Box<dyn Error>> {
     
     if let Some(data) = tx.data {
         match data {
-            protos::transaction_response::Data::Transaction(payment_request) => {
+            Transaction(payment_request) => {
                 assert_eq!(amount, payment_request.amount);
                 assert_eq!(from_addr.to_owned(), payment_request.from_addr);
                 assert_eq!(to_addr.to_owned(), payment_request.to_addr);
             }
-            protos::transaction_response::Data::ValidationRequest(_) => todo!(),
+            ValidationRequest(_) => todo!(),
+            Block(_) => todo!(),
         }
     } 
     Ok(())

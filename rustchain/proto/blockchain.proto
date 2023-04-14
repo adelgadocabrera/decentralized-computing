@@ -1,43 +1,46 @@
 syntax = "proto3";
 package protos;
 
-service TransactionExchange {
-    rpc SendTransaction (Transaction) returns (TransactionResponse) {};
-    rpc Validate (ValidationRequest) returns (ValidationResponse) {};
+service Rustchain {
+  rpc SendBlock (Block) returns (RcResponse) {};
+  rpc SendTransaction (Transaction) returns (RcResponse) {};
+  rpc Validate (ValidationRequest) returns (RcResponse) {};
 }
 
+service P2P {}
+
 message Block {
-    BlockHeader header                = 1;
-    repeated Transaction transactions = 2;
-    uint64 difficulty                 = 3;
-    bytes  block_hash                 = 4;
-    string data                       = 5;
-    uint64 pow                        = 6;
+  BlockHeader header                = 1;
+  repeated Transaction transactions = 2;
+  bytes  block_hash                 = 3;
+  string data                       = 4;
 }
 
 message BlockHeader {
-    uint64 timestamp        = 1;
-    uint64 nonce            = 2;
-    bytes  previous_hash    = 3;
-    uint64 block_index      = 4;
-    bytes  merkle_root      = 5;
+  uint64 timestamp        = 1;
+  uint64 nonce            = 2;
+  uint64 difficulty       = 3;
+  bytes  previous_hash    = 4;
+  uint64 block_index      = 5;
+  bytes  merkle_root      = 6;
 }
 
 
 message Transaction {
-    string from_addr        = 1;
-    string to_addr          = 2;
-    uint32 amount           = 3;
-    string additional_data  = 4;
+  string from_addr        = 1;
+  string to_addr          = 2;
+  uint32 amount           = 3;
+  string additional_data  = 4;
 }
 
-message TransactionResponse {
-    bool   successful = 1;
-    string message    = 2;
-    oneof data {
-      Transaction transaction = 3;
-      ValidationRequest validation_request = 4;
-    }
+message RcResponse {
+  bool   successful                      = 1;
+  string message                         = 2;
+  oneof data {
+    Block block                          = 3;
+    Transaction transaction              = 4;
+    ValidationRequest validation_request = 5;
+  }
 }
 
 message ValidationRequest {}

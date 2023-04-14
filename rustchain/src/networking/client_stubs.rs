@@ -1,12 +1,12 @@
-use crate::protos::transaction_exchange_client::TransactionExchangeClient;
-use crate::protos::{Transaction, TransactionResponse};
+use crate::protos::rustchain_client::RustchainClient;
+use crate::protos::{Transaction, RcResponse};
 use std::error::Error;
 use tonic::transport::Channel;
 use tonic::Request;
 use tonic::transport::Endpoint;
 
 pub struct PeerClient {
-    conn: TransactionExchangeClient<Channel>,
+    conn: RustchainClient<Channel>,
 }
 
 impl PeerClient {
@@ -14,7 +14,7 @@ impl PeerClient {
         let target = format!("https://{}:{}", to, port);
         let endpoint = Endpoint::from_shared(target)?;
         let channel = endpoint.connect().await?;
-        let conn = TransactionExchangeClient::new(channel);
+        let conn = RustchainClient::new(channel);
         Ok(PeerClient { conn })
     }
 
@@ -23,7 +23,7 @@ impl PeerClient {
         from_addr: String,
         to_addr: String,
         amount: u32,
-    ) -> Result<TransactionResponse, Box<dyn Error>> {
+    ) -> Result<RcResponse, Box<dyn Error>> {
         let tx = Request::new(Transaction {
             from_addr,
             to_addr,

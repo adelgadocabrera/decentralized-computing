@@ -1,6 +1,6 @@
 use std::fmt;
 use crate::{utils::concurrent_vec::ConcurrentVec, concurrentvec};
-use super::{block::{create_genesis_block, Block, Transaction, next_block}, mine::{calculate_pow, Miner, new_miner}};
+use super::{block::{create_genesis_block, Block, Transaction, next_block}, mine::{Miner, new_miner, proof_of_work}};
 
 #[derive(Clone)]
 pub struct Blockchain {
@@ -24,26 +24,26 @@ impl Blockchain {
         return self.blocks.peek_first(); 
     }
 
-    // TODO: how do I define 'from_addr' and 'amount'?
-    fn mine(mut self, last_block: &Block) {
-        let last_proof: u64 = last_block.pow;
-        let proof = calculate_pow(&last_proof);
-        self.pending_transactions.push(Transaction{
-            from_addr: String::from("network"),
-            to_addr: hex::encode(self.miner.addr),
-            amount: 1, 
-            additional_data: String::from(""), // TODO: empty for now
-        });
-        let nonce = 0; // TODO: how do we know nonce?
+    fn mine(self, last_block: &Block) {
         let difficulty = 9;
-        next_block(
+        let mut block: Block = next_block(
             last_block, 
-            nonce, 
             self.pending_transactions.flush(), 
             [0;32],  // TODO: add merkle root hash
             difficulty, 
-            proof,
         );
+        let mut header = block.header.unwrap();
+        let (block_hash, _) = proof_of_work(&mut header);
+        block.block_hash = block_hash;
+        
+        let reward: Transaction = Transaction{
+            from_addr: String::from(""),
+            to_addr: hex::encode(self.miner.addr),
+            amount: 1, 
+            additional_data: String::from(""), 
+        };
+        println!("{}", reward);
+        //disseminate  
     }
 }
 

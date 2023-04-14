@@ -1,14 +1,13 @@
-use crate::protos::transaction_response::Data;
-pub use crate::protos::transaction_exchange_server::{TransactionExchange, TransactionExchangeServer};
-use crate::protos::{Transaction, TransactionResponse};
-use crate::protos::{ValidationRequest, ValidationResponse};
+use crate::{protos::rc_response::Data, blockchain::block::Block};
+pub use crate::protos::rustchain_server::{Rustchain, RustchainServer};
+use crate::protos::{Transaction,ValidationRequest, ValidationResponse, RcResponse};
 use std::error::Error;
 use std::net::SocketAddr;
 use tonic::transport::server::Router;
 pub use tonic::{transport::Server, Request, Response, Status};
 
 #[derive(Debug, Default)]
-struct TransactionService {}
+struct RustchainService {}
 
 pub struct PeerServer {
     server: Option<Server>,
@@ -19,9 +18,9 @@ pub struct PeerServer {
 impl PeerServer {
     // let addr = "[::1]:50051".parse().unwrap();
     pub fn new(addr: SocketAddr) -> PeerServer {
-        let payment_service = TransactionService::default();
+        let payment_service = RustchainService::default();
         let mut server = Server::builder();
-        let router = server.add_service(TransactionExchangeServer::new(payment_service));
+        let router = server.add_service(RustchainServer::new(payment_service));
         return PeerServer {
             server: Some(server),
             router: Some(router),
@@ -41,14 +40,21 @@ impl PeerServer {
 }
 
 #[tonic::async_trait]
-impl TransactionExchange for TransactionService {
+impl Rustchain for RustchainService {
+    async fn send_block(
+        &self,
+        request: Request<Block>,
+    ) -> Result<Response<RcResponse>, Status> {
+        unimplemented!();
+    }
+
     async fn send_transaction(
         &self,
         request: Request<Transaction>,
-    ) -> Result<Response<TransactionResponse>, Status> {
+    ) -> Result<Response<RcResponse>, Status> {
         println!("Got a request: {:?}", request);
         let req = request.into_inner();
-        let reply = TransactionResponse {
+        let reply = RcResponse {
             successful: true,
             message: format!(
                 "Sent {}ATokens to {}.",
@@ -60,12 +66,8 @@ impl TransactionExchange for TransactionService {
         Ok(Response::new(reply))
     }
 
-    async fn validate(
-        &self,
-        _: Request<ValidationRequest>,
-    ) -> Result<Response<ValidationResponse>, Status> {
+    async fn validate(&self, _: Request<ValidationRequest>) -> Result<Response<RcResponse>, Status> {
         println!("Got a validation request");
-        let reply = ValidationResponse {};
-        Ok(Response::new(reply))
+        Ok(Response::new(RcResponse::default()))
     }
 }
