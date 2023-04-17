@@ -2,12 +2,32 @@ syntax = "proto3";
 package protos;
 
 service Rustchain {
-  rpc SendBlock (Block) returns (RcResponse) {};
-  rpc SendTransaction (Transaction) returns (RcResponse) {};
-  rpc Validate (ValidationRequest) returns (RcResponse) {};
+  rpc SendBlock (Block) returns (Response) {};
+  rpc SendTransaction (Transaction) returns (Response) {};
+  rpc Validate (ValidationRequest) returns (Response) {};
 }
 
-service P2P {}
+service P2P {
+  rpc GetPeers (GetPeersRequest) returns (PeerList) {};
+  rpc AddPeer (Peer) returns (AddPeerResponse) {};
+  rpc RemovePeer (Peer) returns (RemovePeerResponse) {};
+}
+
+message Peer {
+  string id           = 1;
+  string address      = 2;
+  uint32 port         = 3;
+}
+
+message PeerList {
+  repeated Peer peers   = 1;
+}
+
+message GetPeersRequest {}
+
+message AddPeerResponse {}
+
+message RmovePeerResponse {}
 
 message Block {
   BlockHeader header                = 1;
@@ -31,9 +51,10 @@ message Transaction {
   string to_addr          = 2;
   uint32 amount           = 3;
   string additional_data  = 4;
+  bytes  signature        = 5;
 }
 
-message RcResponse {
+message Response {
   bool   successful                      = 1;
   string message                         = 2;
   oneof data {

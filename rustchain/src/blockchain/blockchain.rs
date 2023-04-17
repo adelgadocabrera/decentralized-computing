@@ -1,70 +1,77 @@
-use std::fmt;
-use crate::{utils::concurrent_vec::ConcurrentVec, concurrentvec};
-use super::{block::{create_genesis_block, Block, Transaction, next_block}, mine::{Miner, new_miner, proof_of_work}};
+use std::sync::Arc;
+use tokio::runtime::Handle;
+use tokio::spawn;
+use tokio::sync::RwLock;
+use tokio::sync::mpsc::Receiver;
+use crate::event_bus::events::BlockchainEvent;
+use crate::protos::{Block, Transaction};
+use crate::event_bus::event_bus::EventBus;
 
-#[derive(Clone)]
+#[derive(Debug)]
 pub struct Blockchain {
-    blocks: ConcurrentVec<Block>,
-    pending_transactions: ConcurrentVec<Transaction>, 
-    miner: Miner,
+    pending_transactions: Arc<RwLock<Vec<Transaction>>>,
+    blocks: Arc<RwLock<Vec<Block>>>,
+
 }
 
 impl Blockchain {
-    // TODO: miner_addr should use new cryptographic module that generates
-    // public and private keys
-    pub fn new() -> Self {
-        let genesis_block: Block = create_genesis_block();
-        let blocks = concurrentvec![genesis_block];
-        let pending_transactions = concurrentvec![];
-        let miner = new_miner().unwrap();
-        Blockchain { blocks, pending_transactions, miner }
-    }
-
-    fn get_genesis(&self) -> Option<Block> {
-        return self.blocks.peek_first(); 
-    }
-
-    fn mine(self, last_block: &Block) {
-        let difficulty = 9;
-        let mut block: Block = next_block(
-            last_block, 
-            self.pending_transactions.flush(), 
-            [0;32],  // TODO: add merkle root hash
-            difficulty, 
-        );
-        let mut header = block.header.unwrap();
-        let (block_hash, _) = proof_of_work(&mut header);
-        block.block_hash = block_hash;
-        
-        let reward: Transaction = Transaction{
-            from_addr: String::from(""),
-            to_addr: hex::encode(self.miner.addr),
-            amount: 1, 
-            additional_data: String::from(""), 
+    pub fn new(event_bus: Arc<RwLock<EventBus>>) -> Arc<RwLock<Self>> {
+        let handle = Handle::current();
+        let blockchain = Blockchain {
+            blocks: Arc::new(RwLock::new(Vec::new())),
+            pending_transactions: Arc::new(RwLock::new(Vec::new())),
         };
-        println!("{}", reward);
-        //disseminate  
+        let blockchain_arc = Arc::new(RwLock::new(blockchain));
+        handle.block_on(async { 
+            let event_receiver = event_bus.write().await.subscribe().await;
+            let blockchain_clone = blockchain_arc.clone();
+            spawn(async move {
+                blockchain_clone
+                    .write()
+                    .await
+                    .listen_for_events(event_receiver)
+                    .await;
+            });
+            blockchain_arc
+        })
+    }
+
+    async fn get_genesis(&self) -> Option<Block> {
+        let blocks = self.blocks.read().await;
+        return blocks.get(0).cloned();
+    }
+
+    pub fn add_block(&mut self, block: Block){
+        unimplemented!()
+    }
+
+    pub fn new_tx(&mut self, transaction: Transaction){
+        unimplemented!()
+    }
+
+    async fn listen_for_events(&mut self, mut event_receiver: Receiver<BlockchainEvent>) {
+        while let Some(event) = event_receiver.recv().await {
+            match event {
+                BlockchainEvent::NewBlock(block) => {
+                    self.add_block(block);
+                }
+                BlockchainEvent::NewTransaction(transaction) => {
+                    self.new_tx(transaction);
+                }
+            }
+        }
     }
 }
 
+// #[cfg(test)]
+// pub mod tests {
+//     use super::*;
 
-impl fmt::Display for Blockchain {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{}\n{}\nminer: {}\nblocks: {}",
-            "rustchain",
-            "---------",
-            hex::encode(self.miner.addr),
-            self.blocks,
-        )
-    }
-}
-
-#[tokio::test]
-async fn test_blockchain_creation() {
-    let blockchain = Blockchain::new();
-    let genesis = blockchain.get_genesis().unwrap();
-    blockchain.mine(&genesis);
-    assert_eq!(0, genesis.header.unwrap().block_index);
-}
+//     #[tokio::test]
+//     async fn test_blockchain_creation() {
+//         let event_bus = EventBus::new();
+//         let blockchain = Blockchain::new(event_bus);
+//         let genesis = blockchain.get_genesis().unwrap();
+//         assert_eq!(0, genesis.header.unwrap().block_index);
+//     }
+// }

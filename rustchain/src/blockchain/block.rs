@@ -35,7 +35,7 @@ pub fn next_block(
     );
 }
 
-fn new_block(
+pub fn new_block(
     previous_hash: Vec<u8>,
     transactions: Vec<Transaction>,
     block_index: u64,

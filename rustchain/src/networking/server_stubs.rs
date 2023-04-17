@@ -1,6 +1,6 @@
-use crate::{protos::rc_response::Data, blockchain::block::Block};
+use crate::{protos::response::Data, blockchain::block::Block};
 pub use crate::protos::rustchain_server::{Rustchain, RustchainServer};
-use crate::protos::{Transaction,ValidationRequest, ValidationResponse, RcResponse};
+use crate::protos::{Transaction,ValidationRequest, ValidationResponse, Response as ProtoResponse};
 use std::error::Error;
 use std::net::SocketAddr;
 use tonic::transport::server::Router;
@@ -44,17 +44,17 @@ impl Rustchain for RustchainService {
     async fn send_block(
         &self,
         request: Request<Block>,
-    ) -> Result<Response<RcResponse>, Status> {
+    ) -> Result<Response<ProtoResponse>, Status> {
         unimplemented!();
     }
 
     async fn send_transaction(
         &self,
         request: Request<Transaction>,
-    ) -> Result<Response<RcResponse>, Status> {
+    ) -> Result<Response<ProtoResponse>, Status> {
         println!("Got a request: {:?}", request);
         let req = request.into_inner();
-        let reply = RcResponse {
+        let reply = ProtoResponse {
             successful: true,
             message: format!(
                 "Sent {}ATokens to {}.",
@@ -66,8 +66,8 @@ impl Rustchain for RustchainService {
         Ok(Response::new(reply))
     }
 
-    async fn validate(&self, _: Request<ValidationRequest>) -> Result<Response<RcResponse>, Status> {
+    async fn validate(&self, _: Request<ValidationRequest>) -> Result<Response<ProtoResponse>, Status> {
         println!("Got a validation request");
-        Ok(Response::new(RcResponse::default()))
+        Ok(Response::new(ProtoResponse::default()))
     }
 }

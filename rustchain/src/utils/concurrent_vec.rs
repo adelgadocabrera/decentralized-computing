@@ -1,7 +1,7 @@
 use std::fmt;
 use std::sync::{Arc, Mutex};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct ConcurrentVec<T> {
     data: Arc<Mutex<Vec<T>>>,
 }

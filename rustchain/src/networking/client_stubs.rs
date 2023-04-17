@@ -1,5 +1,5 @@
 use crate::protos::rustchain_client::RustchainClient;
-use crate::protos::{Transaction, RcResponse};
+use crate::protos::{Transaction, Response as ProtoResponse};
 use std::error::Error;
 use tonic::transport::Channel;
 use tonic::Request;
@@ -23,12 +23,13 @@ impl PeerClient {
         from_addr: String,
         to_addr: String,
         amount: u32,
-    ) -> Result<RcResponse, Box<dyn Error>> {
+    ) -> Result<ProtoResponse, Box<dyn Error>> {
         let tx = Request::new(Transaction {
             from_addr,
             to_addr,
             amount,
-            additional_data: String::from(""), // TODO: empty for now
+            additional_data: String::from(""), 
+            signature: vec![],
         });
         let req = self.conn.send_transaction(tx).await;
         match req {
