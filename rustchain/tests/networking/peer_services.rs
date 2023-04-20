@@ -5,7 +5,7 @@ use std::error::Error;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::time::sleep;
-use protos::response::Data::{Transaction, ValidationRequest, Block};
+use protos::response::Data::Transaction;
 
 #[tokio::test]
 async fn test_payment() -> Result<(), Box<dyn Error>> {

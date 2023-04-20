@@ -27,7 +27,7 @@ message GetPeersRequest {}
 
 message AddPeerResponse {}
 
-message RmovePeerResponse {}
+message RemovePeerResponse {}
 
 message Block {
   BlockHeader header                = 1;

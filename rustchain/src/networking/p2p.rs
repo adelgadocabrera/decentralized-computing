@@ -2,20 +2,17 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 use crate::event_bus::events::BlockchainEvent;
 use crate::event_bus::event_bus::EventBus;
+use crate::protos::Peer;
 use crate::protos::Transaction;
 use crate::protos::Block;
 
-trait IPeer {
-    fn dial(&mut self, addr: String);
-}
-
-pub struct Peer{
+pub struct P2p{
     event_bus: Arc<RwLock<EventBus>>,
 }
 
-impl Peer {
-    pub fn new(event_bus: Arc<RwLock<EventBus>>)-> Peer{
-        return Peer{ event_bus };
+impl P2p {
+    pub fn new(boot_nodes: Vec<Peer>, event_bus: Arc<RwLock<EventBus>>)-> P2p{
+        return P2p{ event_bus };
     }
 
     async fn on_block_received(&self, block: Block) {
