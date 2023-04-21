@@ -19,6 +19,7 @@ use std::io::Error;
 #[derive(Debug, Clone)]
 pub struct Miner {
     wallet: Wallet,
+    pending_transactions: Arc<RwLock<Vec<Transaction>>>,
     event_bus: Arc<RwLock<EventBus>>,
 }
 // mining_reward: f64, do I need to pass mining 
@@ -28,6 +29,7 @@ impl Miner {
     pub fn new(event_bus: Arc<RwLock<EventBus>>) -> Arc<RwLock<Miner>> {
         let miner = Miner{
             wallet: Wallet::new(),
+            pending_transactions: Arc::new(RwLock::new(vec![])),
             event_bus: event_bus.clone(),
         };
         let miner_arc = Arc::new(RwLock::new(miner));

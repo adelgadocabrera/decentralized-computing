@@ -1,11 +1,11 @@
 use std::sync::Arc;
 use tokio::sync::{mpsc::{channel, Receiver, Sender}, RwLock};
-use crate::event_bus::events::BlockchainEvent;
+use crate::event_bus::events::RustchainEvent;
 
 #[derive(Debug, Clone)]
 pub struct EventBus {
-    sender: Sender<BlockchainEvent>,
-    subscribers: Vec<Sender<BlockchainEvent>>,
+    sender: Sender<RustchainEvent>,
+    subscribers: Vec<Sender<RustchainEvent>>,
 }
 
 impl EventBus {
@@ -25,17 +25,17 @@ impl EventBus {
         event_bus
     }
 
-    pub async fn subscribe(&mut self) -> Receiver<BlockchainEvent> {
+    pub async fn subscribe(&mut self) -> Receiver<RustchainEvent> {
         let (sender, receiver) = channel(100);
         self.subscribers.push(sender);
         receiver
     }
 
-    pub async fn publish(&self, event: BlockchainEvent) {
+    pub async fn publish(&self, event: RustchainEvent) {
         let _ = self.sender.send(event).await;
     }
 
-    async fn dispatch(&self, event: BlockchainEvent) {
+    async fn dispatch(&self, event: RustchainEvent) {
         for subscriber in &self.subscribers {
             let _ = subscriber.send(event.clone()).await;
         }

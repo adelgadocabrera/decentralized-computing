@@ -3,15 +3,13 @@ use tokio::runtime::Handle;
 use tokio::spawn;
 use tokio::sync::RwLock;
 use tokio::sync::mpsc::Receiver;
-use crate::event_bus::events::BlockchainEvent;
+use crate::event_bus::events::RustchainEvent;
 use crate::protos::{Block, Transaction};
 use crate::event_bus::event_bus::EventBus;
 
 #[derive(Debug)]
 pub struct Blockchain {
-    pending_transactions: Arc<RwLock<Vec<Transaction>>>,
     blocks: Arc<RwLock<Vec<Block>>>,
-
 }
 
 impl Blockchain {
@@ -19,7 +17,6 @@ impl Blockchain {
         let handle = Handle::current();
         let blockchain = Blockchain {
             blocks: Arc::new(RwLock::new(Vec::new())),
-            pending_transactions: Arc::new(RwLock::new(Vec::new())),
         };
         let blockchain_arc = Arc::new(RwLock::new(blockchain));
         handle.block_on(async { 
@@ -49,13 +46,13 @@ impl Blockchain {
         unimplemented!()
     }
 
-    async fn listen_for_events(&mut self, mut event_receiver: Receiver<BlockchainEvent>) {
+    async fn listen_for_events(&mut self, mut event_receiver: Receiver<RustchainEvent>) {
         while let Some(event) = event_receiver.recv().await {
             match event {
-                BlockchainEvent::NewBlock(block) => {
+                RustchainEvent::NewBlock(block) => {
                     self.add_block(block);
                 }
-                BlockchainEvent::NewTransaction(transaction) => {
+                RustchainEvent::NewTransaction(transaction) => {
                     self.new_tx(transaction);
                 }
             }

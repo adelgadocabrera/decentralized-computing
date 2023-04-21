@@ -10,9 +10,9 @@ use protos::response::Data::Transaction;
 #[tokio::test]
 async fn test_payment() -> Result<(), Box<dyn Error>> {
     // setup server
-    let server_ip  = "[::1]";
+    let server_ip: &str = "[::1]";
     let server_port: u16 = 50051;
-    let addr: SocketAddr = format!("{}:{}", "[::1]", server_port)
+    let addr: SocketAddr = format!("{}:{}", server_ip, server_port)
         .parse()
         .unwrap();
     let peer_server = PeerServer::new(addr);
