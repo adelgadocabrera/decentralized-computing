@@ -1,7 +1,6 @@
 use super::block::BlockHeader;
-use super::wallet::Wallet;
 use crate::event_bus::event_bus::EventBus;
-use crate::event_bus::events::BlockchainEvent;
+use crate::event_bus::events::RustchainEvent;
 use crate::protos::Transaction;
 use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Public};
@@ -18,7 +17,6 @@ use std::io::Error;
 
 #[derive(Debug, Clone)]
 pub struct Miner {
-    wallet: Wallet,
     pending_transactions: Arc<RwLock<Vec<Transaction>>>,
     event_bus: Arc<RwLock<EventBus>>,
 }
@@ -28,7 +26,6 @@ pub struct Miner {
 impl Miner {
     pub fn new(event_bus: Arc<RwLock<EventBus>>) -> Arc<RwLock<Miner>> {
         let miner = Miner{
-            wallet: Wallet::new(),
             pending_transactions: Arc::new(RwLock::new(vec![])),
             event_bus: event_bus.clone(),
         };
@@ -42,27 +39,23 @@ impl Miner {
                     .write()
                     .await
                     .listen_for_events(event_receiver)
-                    .await;
+                .await;
             });
         });
         miner_arc
     }
 
-    async fn listen_for_events(&mut self, mut event_receiver: Receiver<BlockchainEvent>) {
+    async fn listen_for_events(&mut self, mut event_receiver: Receiver<RustchainEvent>) {
         while let Some(event) = event_receiver.recv().await {
             match event {
-                BlockchainEvent::NewBlock(block) => {
+                RustchainEvent::NewBlock(block) => {
                     unimplemented!()
                 }
-                BlockchainEvent::NewTransaction(transaction) => {
+                RustchainEvent::NewTransaction(transaction) => {
                     unimplemented!()
                 }
             }
         }
-    }
-
-    pub fn set_wallet(&mut self, wallet: Wallet) {
-        self.wallet = wallet;
     }
 
     fn mine(

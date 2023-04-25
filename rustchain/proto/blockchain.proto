@@ -52,17 +52,16 @@ message BlockHeader {
 
 
 message Transaction {
-  string from_addr        = 1;
-  string to_addr          = 2;
-  uint32 amount           = 3;
-  string additional_data  = 4;
-  bytes  signature        = 5;
+  repeated UTXOInput inputs = 1;
+  repeated UTXOOutput outputs = 2;
 }
 
 message UTXOInput {
-  bytes  prev_tx_hash   = 1;
-  uint32 output_index   = 2;
-  bytes  signature      = 3;
+  string  from_addr      = 1;
+  bytes   public_key     = 2;
+  bytes   prev_tx_hash   = 3;
+  uint32  output_index   = 4;
+  bytes   signature      = 5;
 }
 
 message UTXOOutput {

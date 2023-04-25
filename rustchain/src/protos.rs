@@ -20,51 +20,82 @@ impl Serialize for BlockHeader {
 
 impl Transaction {
     pub fn set_signature(&mut self, signature: Vec<u8>) {
-        self.signature = signature;
+        for mut input in &mut self.inputs {
+            input.signature = signature.clone();
+        }
     }
 
+    // hashes the whole transaction, including the signature
     pub fn hash(&self) -> Vec<u8> {
-        let bytes = self.to_bytes().unwrap(); // You might want to handle this error instead of using unwrap
+        let bytes = self.to_bytes().unwrap(); // might want to handle this error instead of using unwrap
         let mut hasher = Sha256::new();
         hasher.update(&bytes);
         hasher.finalize().to_vec()
     }
 
+    pub fn to_bytes(&self) -> Result<Box<[u8]>, Box<dyn std::error::Error>> {
+        let mut buf = Vec::new();
+        self.encode(&mut buf)?;
+        Ok(buf.into_boxed_slice())
+    }
+
+    pub fn from_bytes(bytes: &[u8]) -> Result<Transaction, Box<dyn std::error::Error>> {
+        let decoded = Transaction::decode(bytes)?;
+        Ok(decoded)
+    }
+
+    // hashes everything except for the signature. In order for the wallet
+    // to get this hash and then sign it.
     pub fn hashable_content(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-        let mut pb = Transaction::default();
-        pb.from_addr = self.from_addr.clone();
-        pb.to_addr = self.to_addr.clone();
-        pb.amount = self.amount;
-        pb.additional_data = self.additional_data.clone();
-        // Leave the signature field empty
+        let mut input_data = Vec::new();
+        for input in &self.inputs {
+            let input_content = input.hashable_content()?;
+            input_data.extend(input_content);
+        }
+
+        let mut output_data = Vec::new();
+        for output in &self.outputs {
+            let output_content = output.hashable_content()?;
+            output_data.extend(output_content);
+        }
+
+        let mut buf = Vec::new();
+        buf.extend(input_data);
+        buf.extend(output_data);
+        Ok(buf)
+    }
+}
+
+impl UtxoInput {
+    pub fn set_signature(&mut self, signature: Vec<u8>) {
+        self.signature = signature.clone();
+    }
+
+    pub fn hashable_content(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let mut pb = UtxoInput {
+            from_addr: self.from_addr.clone(),
+            public_key: self.public_key.clone(),
+            prev_tx_hash: self.prev_tx_hash.clone(),
+            output_index: self.output_index,
+            signature: vec![], // Leave the signature field empty
+        };
 
         let mut buf = Vec::new();
         pb.encode(&mut buf)?;
         Ok(buf)
     }
+}
 
-    pub fn to_bytes(&self) -> Result<Box<[u8]>, Box<dyn std::error::Error>> {
-        let mut pb = Transaction::default();
-        pb.from_addr = self.from_addr.clone();
-        pb.to_addr = self.to_addr.clone();
-        pb.amount = self.amount;
-        pb.additional_data = self.additional_data.clone();
-        pb.signature = self.signature.clone();
+impl UtxoOutput {
+    pub fn hashable_content(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let pb = UtxoOutput {
+            to_addr: self.to_addr.clone(),
+            amount: self.amount,
+        };
 
         let mut buf = Vec::new();
         pb.encode(&mut buf)?;
-        Ok(buf.into_boxed_slice())
-    }
-
-    pub fn from_bytes(bytes: &[u8]) -> Result<Transaction, Box<dyn std::error::Error>> {
-        let pb = Transaction::decode(bytes)?;
-        Ok(Transaction {
-            from_addr: pb.from_addr,
-            to_addr: pb.to_addr,
-            amount: pb.amount,
-            additional_data: pb.additional_data,
-            signature: pb.signature,
-        })
+        Ok(buf)
     }
 }
 
@@ -91,8 +122,63 @@ impl fmt::Display for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Transaction {{ from_addr: {}, to_addr: {}, amount: {}, additional_data: {} }}",
-            self.from_addr, self.to_addr, self.amount, self.additional_data
+            "Transaction {{ inputs: {:?}, outputs: {:?} }}",
+            self.inputs, self.outputs
         )
+    }
+}
+
+impl fmt::Display for UtxoInput {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "UTXOInput {{ prev_tx_hash: {:?}, output_index: {}, signature: {:?} }}",
+            self.prev_tx_hash, self.output_index, self.signature
+        )
+    }
+}
+
+impl fmt::Display for UtxoOutput {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "UTXOOutput {{ to_addr: {}, amount: {} }}",
+            self.to_addr, self.amount
+        )
+    }
+}
+
+pub struct UtxoInputs(Vec<UtxoInput>);
+pub struct UtxoOutputs(Vec<UtxoOutput>);
+
+impl From<Vec<UtxoInput>> for UtxoInputs {
+    fn from(inputs: Vec<UtxoInput>) -> Self {
+        UtxoInputs(inputs)
+    }
+}
+
+impl From<Vec<UtxoOutput>> for UtxoOutputs {
+    fn from(outputs: Vec<UtxoOutput>) -> Self {
+        UtxoOutputs(outputs)
+    }
+}
+
+impl fmt::Display for UtxoInputs {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "UtxoInputs [")?;
+        for input in &self.0 {
+            writeln!(f, "  {},", input)?;
+        }
+        write!(f, "]")
+    }
+}
+
+impl fmt::Display for UtxoOutputs {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "UtxoOutputs [")?;
+        for output in &self.0 {
+            writeln!(f, "  {},", output)?;
+        }
+        write!(f, "]")
     }
 }

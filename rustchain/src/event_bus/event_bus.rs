@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use tokio::sync::{mpsc::{channel, Receiver, Sender}, RwLock};
+use tokio::{sync::{mpsc::{channel, Receiver, Sender}, RwLock}, spawn};
 use crate::event_bus::events::RustchainEvent;
 
 #[derive(Debug, Clone)]
@@ -9,7 +9,7 @@ pub struct EventBus {
 }
 
 impl EventBus {
-    pub fn new() -> Arc<RwLock<EventBus>> {
+    pub async fn new() -> Arc<RwLock<EventBus>> {
         let (sender, mut receiver) = channel(100);
         let event_bus = Arc::new(RwLock::new(
             Self {
@@ -17,7 +17,7 @@ impl EventBus {
             subscribers: vec![],
         }));
         let event_bus_clone = Arc::clone(&event_bus);
-        tokio::spawn(async move {
+        spawn(async move {
             while let Some(event) = receiver.recv().await {
                 (event_bus_clone.write().await).dispatch(event).await;
             }
@@ -41,4 +41,3 @@ impl EventBus {
         }
     }
 }
-

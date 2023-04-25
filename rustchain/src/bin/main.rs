@@ -1,5 +1,3 @@
-use rustchain::blockchain::block::{create_genesis_block, next_block, Block, Transaction};
-
 fn main() {
     // let genesis = create_genesis_block();
     // let nonce: u64 = 0;

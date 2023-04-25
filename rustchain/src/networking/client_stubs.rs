@@ -22,17 +22,9 @@ impl PeerClient {
 
     pub async fn send_transaction(
         mut self,
-        from_addr: String,
-        to_addr: String,
-        amount: u32,
+        transaction: Transaction,
     ) -> Result<ProtoResponse, Box<dyn Error>> {
-        let tx = Request::new(Transaction {
-            from_addr,
-            to_addr,
-            amount,
-            additional_data: String::from(""), 
-            signature: vec![],
-        });
+        let tx = Request::new(transaction);
         let req = self.rustchain.send_transaction(tx).await;
         match req {
             Ok(resp) => Ok(resp.into_inner()),

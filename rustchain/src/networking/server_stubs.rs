@@ -10,7 +10,7 @@ use crate::protos::{
     AddPeerResponse, 
     RemovePeerResponse, 
     Null, 
-    Heartbeat
+    Heartbeat, UtxoInputs, UtxoOutputs
 };
 use std::error::Error;
 use std::net::SocketAddr;
@@ -72,14 +72,17 @@ impl Rustchain for RustchainService {
     ) -> Result<Response<RustchainResponse>, Status> {
         println!("Got a request: {:?}", request);
         let req = request.into_inner();
+        let data = Data::Transaction(req.clone()).into();
+        let inputs: UtxoInputs = req.inputs.into();
+        let outputs: UtxoOutputs = req.outputs.into();
         let reply = RustchainResponse {
             successful: true,
             message: format!(
                 "Sent {}ATokens to {}.",
-                req.amount,
-                req.to_addr,
+                inputs,
+                outputs,
             ),
-            data: Data::Transaction(req.to_owned()).into(),
+            data,
         };
         Ok(Response::new(reply))
     }
