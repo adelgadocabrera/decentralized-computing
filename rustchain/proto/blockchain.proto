@@ -14,9 +14,16 @@ service P2P {
   rpc SendHeartbeat (Heartbeat) returns (Null) {};
 }
 
+service Bootstrap {
+  rpc Register (Peer) returns (PeerList) {};
+}
+
 message Null {}
 
-message Heartbeat {}
+message Heartbeat {
+  PeerList peers      = 1;
+  Peer     peer       = 2;
+}
 
 message Peer {
   string id           = 1;

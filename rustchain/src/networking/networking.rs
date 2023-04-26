@@ -1,26 +1,10 @@
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use crate::event_bus::events::RustchainEvent;
-use crate::event_bus::event_bus::EventBus;
-use crate::protos::Transaction;
-use crate::protos::Block;
-
-struct Networking{
-    event_bus: Arc<RwLock<EventBus>>,
+// TO DO: implement! How do we get ip? We want to make this work
+// not only in localhost or private network but for any exposed node.
+// Hole punching?
+pub fn get_self_ip() -> String {
+    return String::from("[::1]");
 }
 
-impl Networking {
-    pub fn new(event_bus: Arc<RwLock<EventBus>>)-> Networking{
-        return Networking{ event_bus };
-    }
-
-    async fn on_block_received(&self, block: Block) {
-        let bus = self.event_bus.write().await;
-        bus.publish(RustchainEvent::NewBlock(block)).await;
-    }
-
-    async fn on_transaction_received(&self, transaction: Transaction) {
-        let bus = self.event_bus.write().await;
-        bus.publish(RustchainEvent::NewTransaction(transaction)).await;
-    }
+pub fn get_self_port() -> u32 {
+    return 5002;
 }

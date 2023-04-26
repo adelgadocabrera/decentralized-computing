@@ -5,6 +5,12 @@ use sha2::{Digest, Sha256};
 use std::fmt;
 use tonic::{IntoRequest, Request};
 
+impl From<Vec<Peer>> for PeerList {
+    fn from(peers_vec: Vec<Peer>) -> Self {
+        PeerList { peers: peers_vec }
+    }
+}
+
 impl Serialize for BlockHeader {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let mut state = serializer.serialize_struct("BlockHeader", 6)?;

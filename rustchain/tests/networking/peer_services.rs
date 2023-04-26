@@ -1,5 +1,5 @@
 use rustchain::blockchain::wallet::Wallet;
-use rustchain::event_bus::event_bus::{self, EventBus};
+use rustchain::event_bus::event_bus::{EventBus};
 use rustchain::networking::client_stubs::PeerClient;
 use rustchain::networking::server_stubs::PeerServer;
 use rustchain::protos::response::Data;

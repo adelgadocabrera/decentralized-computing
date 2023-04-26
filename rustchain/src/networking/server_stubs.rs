@@ -1,17 +1,21 @@
-use crate::{protos::response::Data, blockchain::block::Block};
-pub use crate::protos::rustchain_server::{Rustchain, RustchainServer};
-pub use crate::protos::p2p_server::{P2p, P2pServer};
-use crate::protos::{
-    Transaction,
-    ValidationRequest, 
-    Response as RustchainResponse, 
-    GetPeersRequest,PeerList, 
-    Peer, 
-    AddPeerResponse, 
-    RemovePeerResponse, 
-    Null, 
-    Heartbeat, UtxoInputs, UtxoOutputs
+use crate::{
+    blockchain::block::Block,
+    protos::{
+        response::Data, 
+        rustchain_server::{Rustchain, RustchainServer},
+        p2p_server::{P2p, P2pServer},
+        Transaction,
+        ValidationRequest,
+        Response as RustchainResponse,
+        GetPeersRequest, PeerList,
+        Peer,
+        AddPeerResponse,
+        RemovePeerResponse,
+        Null,
+        Heartbeat, UtxoInputs, UtxoOutputs
+    },
 };
+
 use std::error::Error;
 use std::net::SocketAddr;
 use tonic::transport::server::Router;
@@ -24,13 +28,12 @@ struct RustchainService {}
 struct P2pService {}
 
 pub struct PeerServer {
-    server: Option<Server>,
-    router: Option<Router>,
+    server: Server,
+    router: Router,
     addr: SocketAddr,
 }
 
 impl PeerServer {
-    // let addr = "[::1]:50051".parse().unwrap();
     pub fn new(addr: SocketAddr) -> PeerServer {
         let payment_service = RustchainService::default();
         let p2p_service = P2pService::default();
@@ -38,21 +41,19 @@ impl PeerServer {
         let router = server
             .add_service(RustchainServer::new(payment_service))
             .add_service(P2pServer::new(p2p_service));
-        // add additional services to router here..
+            // add additional services to router here..
         return PeerServer {
-            server: Some(server),
-            router: Some(router),
+            server,
+            router,
             addr,
         };
     }
 
-    pub async fn serve(mut self) -> Result<(), Box<dyn Error + Send>> {
-        if let Some(router) = self.router.take() {
-            router
-                .serve(self.addr)
-                .await
-                .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?;
-        }
+    pub async fn serve(self) -> Result<(), Box<dyn Error + Send>> {
+        self.router
+            .serve(self.addr)
+            .await
+            .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?;
         Ok(())
     }
 }
