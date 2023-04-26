@@ -1,18 +1,11 @@
 use crate::{
     blockchain::block::Block,
     protos::{
-        response::Data, 
-        rustchain_server::{Rustchain, RustchainServer},
         p2p_server::{P2p, P2pServer},
-        Transaction,
-        ValidationRequest,
-        Response as RustchainResponse,
-        GetPeersRequest, PeerList,
-        Peer,
-        AddPeerResponse,
-        RemovePeerResponse,
-        Null,
-        Heartbeat, UtxoInputs, UtxoOutputs
+        response::Data,
+        rustchain_server::{Rustchain, RustchainServer},
+        AddPeerResponse, GetPeersRequest, Heartbeat, Null, Peer, PeerList, RemovePeerResponse,
+        Response as RustchainResponse, Transaction, UtxoInputs, UtxoOutputs, ValidationRequest,
     },
 };
 
@@ -28,7 +21,7 @@ struct RustchainService {}
 struct P2pService {}
 
 pub struct PeerServer {
-    server: Server,
+    // server: Server, // do I really need this? simplify!
     router: Router,
     addr: SocketAddr,
 }
@@ -41,9 +34,9 @@ impl PeerServer {
         let router = server
             .add_service(RustchainServer::new(payment_service))
             .add_service(P2pServer::new(p2p_service));
-            // add additional services to router here..
+        // add additional services to router here..
         return PeerServer {
-            server,
+            // server,
             router,
             addr,
         };
@@ -78,34 +71,35 @@ impl Rustchain for RustchainService {
         let outputs: UtxoOutputs = req.outputs.into();
         let reply = RustchainResponse {
             successful: true,
-            message: format!(
-                "Sent {}ATokens to {}.",
-                inputs,
-                outputs,
-            ),
+            message: format!("Sent {}ATokens to {}.", inputs, outputs,),
             data,
         };
         Ok(Response::new(reply))
     }
 
-    async fn validate(&self, _: Request<ValidationRequest>) -> Result<Response<RustchainResponse>, Status> {
+    async fn validate(
+        &self,
+        _: Request<ValidationRequest>,
+    ) -> Result<Response<RustchainResponse>, Status> {
         println!("Got a validation request");
         Ok(Response::new(RustchainResponse::default()))
     }
 }
 
-
 #[tonic::async_trait]
 impl P2p for P2pService {
-    async fn get_peers(&self, req: Request<GetPeersRequest>)-> Result<Response<PeerList>, Status> {
+    async fn get_peers(&self, req: Request<GetPeersRequest>) -> Result<Response<PeerList>, Status> {
         Ok(Response::new(PeerList::default()))
     }
 
-    async fn add_peer(&self, req: Request<Peer>)-> Result<Response<AddPeerResponse>, Status> {
+    async fn add_peer(&self, req: Request<Peer>) -> Result<Response<AddPeerResponse>, Status> {
         Ok(Response::new(AddPeerResponse::default()))
     }
 
-    async fn remove_peer(&self, req: Request<Peer>)-> Result<Response<RemovePeerResponse>, Status> {
+    async fn remove_peer(
+        &self,
+        req: Request<Peer>,
+    ) -> Result<Response<RemovePeerResponse>, Status> {
         Ok(Response::new(RemovePeerResponse::default()))
     }
 

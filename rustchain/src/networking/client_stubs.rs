@@ -1,13 +1,13 @@
 use crate::networking::networking::{get_self_ip, get_self_port};
-use crate::protos::{Heartbeat, Peer, PeerList, Null, GetPeersRequest};
-use crate::protos::rustchain_client::RustchainClient;
 use crate::protos::bootstrap_client::BootstrapClient;
 use crate::protos::p2p_client::P2pClient;
-use crate::protos::{Transaction, Response as ProtoResponse};
+use crate::protos::rustchain_client::RustchainClient;
+use crate::protos::{GetPeersRequest, Heartbeat, Null, Peer, PeerList};
+use crate::protos::{Response as ProtoResponse, Transaction};
 use std::error::Error;
 use tonic::transport::Channel;
-use tonic::Request;
 use tonic::transport::Endpoint;
+use tonic::Request;
 
 pub struct PeerClient {
     bootstrap: BootstrapClient<Channel>,
@@ -23,12 +23,20 @@ impl PeerClient {
         let rustchain = RustchainClient::new(channel.clone());
         let bootstrap = BootstrapClient::new(channel.clone());
         let p2p = P2pClient::new(channel.clone());
-        Ok(PeerClient { bootstrap, rustchain, p2p })
+        Ok(PeerClient {
+            bootstrap,
+            rustchain,
+            p2p,
+        })
     }
 
     pub async fn register(&mut self) -> Result<PeerList, Box<dyn Error>> {
         // peer id will be assigned upon registration
-        let peer = Peer { id: String::from(""), ip: get_self_ip(), port: get_self_port() };
+        let peer = Peer {
+            id: String::from(""),
+            ip: get_self_ip(),
+            port: get_self_port(),
+        };
         let req = self.bootstrap.register(Request::new(peer)).await;
         match req {
             Ok(resp) => Ok(resp.into_inner()),
@@ -48,20 +56,30 @@ impl PeerClient {
         }
     }
 
-    pub async fn get_peers(mut self)-> Result<PeerList, Box<dyn Error>>{
-        let req = self.p2p.get_peers(Request::new(GetPeersRequest::default())).await;
+    pub async fn get_peers(mut self) -> Result<PeerList, Box<dyn Error>> {
+        let req = self
+            .p2p
+            .get_peers(Request::new(GetPeersRequest::default()))
+            .await;
         match req {
             Ok(resp) => Ok(resp.into_inner()),
             Err(e) => Err(Box::new(e)),
         }
     }
 
-    pub async fn send_heartbeat(&mut self, peers: PeerList, peer: Peer) -> Result<Null, Box<dyn Error>> {
-        let heartbeat = Heartbeat { peers: Some(peers), peer: Some(peer) };
+    pub async fn send_heartbeat(
+        &mut self,
+        peers: PeerList,
+        peer: Peer,
+    ) -> Result<Null, Box<dyn Error>> {
+        let heartbeat = Heartbeat {
+            peers: Some(peers),
+            peer: Some(peer),
+        };
         let req = self.p2p.send_heartbeat(Request::new(heartbeat)).await;
         match req {
             Ok(resp) => Ok(resp.into_inner()),
             Err(e) => Err(Box::new(e)),
         }
-    } 
+    }
 }

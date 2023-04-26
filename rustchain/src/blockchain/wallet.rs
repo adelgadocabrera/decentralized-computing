@@ -1,9 +1,7 @@
-use std::collections::HashMap;
-use std::sync::Arc;
 use crate::event_bus::event_bus::EventBus;
-use crate::protos::Transaction;
-use crate::protos::{UtxoInput,UtxoOutput};
 use crate::event_bus::events::RustchainEvent;
+use crate::protos::{Block, Transaction};
+use crate::protos::{UtxoInput, UtxoOutput};
 use openssl::hash::hash;
 use openssl::sign::Verifier;
 use openssl::{
@@ -13,11 +11,13 @@ use openssl::{
     rsa::Rsa,
     sign::Signer,
 };
-use ripemd::{Ripemd160, Digest};
+use ripemd::{Digest, Ripemd160};
 use sha2::Sha256;
+use std::collections::HashMap;
+use std::sync::Arc;
 use tokio::spawn;
-use tokio::sync::RwLock;
 use tokio::sync::mpsc::Receiver;
+use tokio::sync::RwLock;
 
 #[derive(Clone, Debug)]
 pub struct Wallet {
@@ -39,8 +39,8 @@ impl Wallet {
         )
         .expect("Failed to create public key");
 
-        let address = Wallet::compute_address(&public_key)
-            .expect("Failed to compute wallet address");
+        let address =
+            Wallet::compute_address(&public_key).expect("Failed to compute wallet address");
 
         let wallet = Wallet {
             address,
@@ -52,26 +52,41 @@ impl Wallet {
         let wallet_arc = Arc::new(RwLock::new(wallet));
         let wallet_clone = wallet_arc.clone();
         let event_receiver: Receiver<RustchainEvent> = event_bus.write().await.subscribe().await;
-        spawn(async move { Wallet::listen_for_events(wallet_clone.clone(), event_receiver).await; });
+        spawn(async move {
+            Wallet::listen_for_events(wallet_clone.clone(), event_receiver).await;
+        });
         wallet_arc
     }
 
-    async fn listen_for_events(wallet: Arc<RwLock<Wallet>>, mut event_receiver: Receiver<RustchainEvent>) {
+    async fn listen_for_events(
+        wallet: Arc<RwLock<Wallet>>,
+        mut event_receiver: Receiver<RustchainEvent>,
+    ) {
         while let Some(event) = event_receiver.recv().await {
             match event {
-                RustchainEvent::NewBlock(_) => {
-                    unimplemented!()
+                RustchainEvent::NewBlock(block) => {
+                    Wallet::on_block_received(wallet.clone(), block).await;
                 }
                 RustchainEvent::NewTransaction(tx) => {
-                    println!("WE HAVE A NEW TRANSACTION EVENT!!!!");
-                    let mut w = wallet.write().await;
-                    for (index, utxo_output) in tx.clone().outputs.into_iter().enumerate() {
-                        if utxo_output.to_addr != w.address { continue; }
-                        let tx_hash = hex::encode(tx.hash());
-                        w.utxos.insert((tx_hash, index as u32), utxo_output.clone()); 
-                    }
+                    Wallet::on_tx_received(wallet.clone(), tx).await;
+                }
+                _ => {
+                    unimplemented!();
                 }
             }
+        }
+    }
+
+    async fn on_block_received(_: Arc<RwLock<Wallet>>, _: Block) {}
+
+    async fn on_tx_received(wallet: Arc<RwLock<Wallet>>, tx: Transaction) {
+        let mut w = wallet.write().await;
+        for (index, utxo_output) in tx.clone().outputs.into_iter().enumerate() {
+            if utxo_output.to_addr != w.address {
+                continue;
+            }
+            let tx_hash = hex::encode(tx.hash());
+            w.utxos.insert((tx_hash, index as u32), utxo_output.clone());
         }
     }
 
@@ -85,12 +100,8 @@ impl Wallet {
 
         // Use a network identifier byte if needed (e.g., 0x00 for Bitcoin mainnet)
         // In this example, we'll skip the network identifier byte.
-        let checksum = Sha256::digest(
-            &Sha256::digest(
-                ripemd_hash.as_slice()
-            ).to_vec())
-            .to_vec()[..4]
-            .to_vec();
+        let checksum =
+            Sha256::digest(&Sha256::digest(ripemd_hash.as_slice()).to_vec()).to_vec()[..4].to_vec();
         let mut extended_data = Vec::with_capacity(ripemd_hash.len() + 4);
         extended_data.extend_from_slice(ripemd_hash.as_slice());
         extended_data.extend_from_slice(&checksum[..]);
@@ -100,13 +111,17 @@ impl Wallet {
     }
 
     pub async fn air_drop(&self, amount: u32) {
-        let mut tx = Transaction::default(); 
+        let mut tx = Transaction::default();
         let utxo_output = UtxoOutput {
             to_addr: self.address.clone(),
             amount,
         };
         tx.outputs.push(utxo_output);
-        self.event_bus.read().await.publish(RustchainEvent::NewTransaction(tx)).await;
+        self.event_bus
+            .read()
+            .await
+            .publish(RustchainEvent::NewTransaction(tx))
+            .await;
     }
 
     pub fn sign_transaction(
@@ -121,7 +136,7 @@ impl Wallet {
     }
 
     pub async fn send_transaction(
-        &mut self, 
+        &mut self,
         to_addr: String,
         amount: u32,
     ) -> Result<Transaction, Box<dyn std::error::Error>> {
@@ -166,9 +181,13 @@ impl Wallet {
         }
 
         // wait for tx to be dispatched
-        self.event_bus.read().await.publish(RustchainEvent::NewTransaction(tx.clone())).await;
-        
-        // if tx OK then remove used utxo's 
+        self.event_bus
+            .read()
+            .await
+            .publish(RustchainEvent::NewTransaction(tx.clone()))
+            .await;
+
+        // if tx OK then remove used utxo's
         for utxo in used_utxos {
             self.utxos.remove(&utxo);
         }
@@ -198,7 +217,7 @@ impl Wallet {
         self.public_key.clone()
     }
 
-    pub fn get_address(&self)->String {
+    pub fn get_address(&self) -> String {
         return self.address.clone();
     }
 
@@ -219,15 +238,18 @@ pub mod tests {
 
     #[tokio::test]
     async fn not_enough_balance() {
-            let event_bus = EventBus::new().await;
-            let bob = Wallet::new(event_bus.clone()).await; 
-            let alice = Wallet::new(event_bus.clone()).await;
-            let alice_key = alice.read().await.public_key_string().unwrap();
-            assert!(matches!(bob.write().await.send_transaction(alice_key, 500).await, Err(_)));
+        let event_bus = EventBus::new().await;
+        let bob = Wallet::new(event_bus.clone()).await;
+        let alice = Wallet::new(event_bus.clone()).await;
+        let alice_key = alice.read().await.public_key_string().unwrap();
+        assert!(matches!(
+            bob.write().await.send_transaction(alice_key, 500).await,
+            Err(_)
+        ));
     }
 
     #[tokio::test]
-    async fn test_air_drop(){
+    async fn test_air_drop() {
         let amount = 500;
         let event_bus = EventBus::new().await;
         let bob = Wallet::new(event_bus).await;

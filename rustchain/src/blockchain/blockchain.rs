@@ -1,11 +1,11 @@
+use crate::event_bus::event_bus::EventBus;
+use crate::event_bus::events::RustchainEvent;
+use crate::protos::Block;
 use std::sync::Arc;
 use tokio::runtime::Handle;
 use tokio::spawn;
-use tokio::sync::RwLock;
 use tokio::sync::mpsc::Receiver;
-use crate::event_bus::events::RustchainEvent;
-use crate::protos::{Block, Transaction};
-use crate::event_bus::event_bus::EventBus;
+use tokio::sync::RwLock;
 
 #[derive(Debug)]
 pub struct Blockchain {
@@ -19,7 +19,7 @@ impl Blockchain {
             blocks: Arc::new(RwLock::new(Vec::new())),
         };
         let blockchain_arc = Arc::new(RwLock::new(blockchain));
-        handle.block_on(async { 
+        handle.block_on(async {
             let event_receiver = event_bus.write().await.subscribe().await;
             let blockchain_clone = blockchain_arc.clone();
             spawn(async move {
@@ -38,22 +38,18 @@ impl Blockchain {
         return blocks.get(0).cloned();
     }
 
-    pub fn add_block(&mut self, block: Block){
-        unimplemented!()
-    }
-
-    pub fn new_tx(&mut self, transaction: Transaction){
-        unimplemented!()
+    pub async fn add_block(&mut self, block: Block) {
+        self.blocks.write().await.push(block);
     }
 
     async fn listen_for_events(&mut self, mut event_receiver: Receiver<RustchainEvent>) {
         while let Some(event) = event_receiver.recv().await {
             match event {
                 RustchainEvent::NewBlock(block) => {
-                    self.add_block(block);
+                    self.add_block(block).await;
                 }
-                RustchainEvent::NewTransaction(transaction) => {
-                    self.new_tx(transaction);
+                _ => {
+                    unimplemented!();
                 }
             }
         }
