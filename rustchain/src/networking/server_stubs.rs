@@ -1,5 +1,7 @@
+use crate::event_bus::events::RustchainEvent;
 use crate::{
     blockchain::block::Block,
+    event_bus::event_bus::EventBus,
     protos::{
         p2p_server::{P2p, P2pServer},
         response::Data,
@@ -9,16 +11,23 @@ use crate::{
     },
 };
 
-use std::error::Error;
 use std::net::SocketAddr;
+use std::{error::Error, sync::Arc};
+use tokio::sync::RwLock;
 use tonic::transport::server::Router;
 pub use tonic::{transport::Server, Request, Response, Status};
 
-#[derive(Debug, Default)]
-struct RustchainService {}
+use super::networking::get_self_addr;
 
-#[derive(Debug, Default)]
-struct P2pService {}
+#[derive(Debug)]
+struct RustchainService {
+    event_bus: Arc<RwLock<EventBus>>,
+}
+
+#[derive(Debug)]
+struct P2pService {
+    event_bus: Arc<RwLock<EventBus>>,
+}
 
 pub struct PeerServer {
     // server: Server, // do I really need this? simplify!
@@ -27,9 +36,13 @@ pub struct PeerServer {
 }
 
 impl PeerServer {
-    pub fn new(addr: SocketAddr) -> PeerServer {
-        let payment_service = RustchainService::default();
-        let p2p_service = P2pService::default();
+    pub fn new(event_bus: Arc<RwLock<EventBus>>) -> PeerServer {
+        let payment_service = RustchainService {
+            event_bus: event_bus.clone(),
+        };
+        let p2p_service = P2pService {
+            event_bus: event_bus.clone(),
+        };
         let mut server = Server::builder();
         let router = server
             .add_service(RustchainServer::new(payment_service))
@@ -38,7 +51,7 @@ impl PeerServer {
         return PeerServer {
             // server,
             router,
-            addr,
+            addr: get_self_addr(),
         };
     }
 
@@ -65,10 +78,15 @@ impl Rustchain for RustchainService {
         request: Request<Transaction>,
     ) -> Result<Response<RustchainResponse>, Status> {
         println!("Got a request: {:?}", request);
-        let req = request.into_inner();
-        let data = Data::Transaction(req.clone()).into();
-        let inputs: UtxoInputs = req.inputs.into();
-        let outputs: UtxoOutputs = req.outputs.into();
+        let tx = request.into_inner();
+        self.event_bus
+            .write()
+            .await
+            .publish(RustchainEvent::NewTransaction(tx.clone()))
+            .await;
+        let data = Data::Transaction(tx.clone()).into();
+        let inputs: UtxoInputs = tx.inputs.into();
+        let outputs: UtxoOutputs = tx.outputs.into();
         let reply = RustchainResponse {
             successful: true,
             message: format!("Sent {}ATokens to {}.", inputs, outputs,),

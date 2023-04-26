@@ -2,7 +2,7 @@ use crate::networking::networking::{get_self_ip, get_self_port};
 use crate::protos::bootstrap_client::BootstrapClient;
 use crate::protos::p2p_client::P2pClient;
 use crate::protos::rustchain_client::RustchainClient;
-use crate::protos::{GetPeersRequest, Heartbeat, Null, Peer, PeerList};
+use crate::protos::{GetPeersRequest, Heartbeat, Null, Peer, PeerList, RegisterResponse};
 use crate::protos::{Response as ProtoResponse, Transaction};
 use std::error::Error;
 use tonic::transport::Channel;
@@ -30,7 +30,7 @@ impl PeerClient {
         })
     }
 
-    pub async fn register(&mut self) -> Result<PeerList, Box<dyn Error>> {
+    pub async fn register(&mut self) -> Result<RegisterResponse, Box<dyn Error>> {
         // peer id will be assigned upon registration
         let peer = Peer {
             id: String::from(""),

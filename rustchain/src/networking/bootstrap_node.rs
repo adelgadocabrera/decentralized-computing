@@ -2,7 +2,7 @@ use std::{error::Error, net::SocketAddr, sync::Arc};
 
 use crate::protos::{
     bootstrap_server::{Bootstrap, BootstrapServer},
-    Heartbeat, Null, Peer, PeerList,
+    Peer, PeerList, RegisterResponse,
 };
 use tokio::sync::RwLock;
 use tonic::transport::server::Router;
@@ -63,7 +63,7 @@ impl Default for BootstrapService {
 
 #[tonic::async_trait]
 impl Bootstrap for BootstrapService {
-    async fn register(&self, req: Request<Peer>) -> Result<Response<PeerList>, Status> {
+    async fn register(&self, req: Request<Peer>) -> Result<Response<RegisterResponse>, Status> {
         let mut peer = req.into_inner();
         let id = {
             let mut id_counter = self.id_counter.write().await;
@@ -72,8 +72,12 @@ impl Bootstrap for BootstrapService {
         };
         peer.id = id.to_string();
         self.peers.write().await.push(peer);
-        let peer_list = PeerList::from(self.peers.read().await.clone());
-        Ok(Response::new(peer_list))
+        let peers = PeerList::from(self.peers.read().await.clone());
+        let resp = RegisterResponse {
+            peers: Some(peers),
+            peer: Some(peer),
+        };
+        Ok(Response::new(resp))
     }
 }
 
@@ -106,9 +110,9 @@ pub mod tests {
 
         // register client
         let mut peer_client: PeerClient = PeerClient::new(SERVER_IP, SERVER_PORT).await.unwrap();
-        let peer_list = peer_client.register().await.unwrap();
+        let resp = peer_client.register().await.unwrap();
         sleep(Duration::from_millis(100)).await; // buffer time
-        let peers: Vec<Peer> = peer_list.peers;
+        let peers: Vec<Peer> = resp.peers.unwrap().peers;
         // bootstrap node and peer should have sames nodes
         assert_eq!(peers.len(), 1);
         assert_eq!(
@@ -132,7 +136,7 @@ pub mod tests {
         for _ in 0..10 {
             let mut peer_client: PeerClient =
                 PeerClient::new(SERVER_IP, SERVER_PORT).await.unwrap();
-            let peer_list = peer_client.register().await.unwrap().peers;
+            let peer_list = peer_client.register().await.unwrap().peers.unwrap().peers;
             peer_lists.push(peer_list);
         }
         // - checks that each peer is receiving i number of register clients. Meanning that the third
