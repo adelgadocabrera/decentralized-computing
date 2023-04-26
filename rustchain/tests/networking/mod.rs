@@ -1,1 +1,1 @@
-pub mod peer_services;
+pub mod p2p;

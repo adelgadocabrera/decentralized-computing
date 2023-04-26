@@ -71,11 +71,11 @@ impl Bootstrap for BootstrapService {
             *id_counter
         };
         peer.id = id.to_string();
-        self.peers.write().await.push(peer);
+        self.peers.write().await.push(peer.clone());
         let peers = PeerList::from(self.peers.read().await.clone());
         let resp = RegisterResponse {
             peers: Some(peers),
-            peer: Some(peer),
+            peer: Some(peer.clone()),
         };
         Ok(Response::new(resp))
     }

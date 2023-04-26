@@ -2,21 +2,18 @@ use protos::Transaction;
 use rustchain::blockchain::wallet::Wallet;
 use rustchain::event_bus::event_bus::EventBus;
 use rustchain::networking::client_stubs::PeerClient;
+use rustchain::networking::networking::{get_self_ip, get_self_port};
 use rustchain::networking::server_stubs::PeerServer;
 use rustchain::protos::response::Data;
 use rustchain::protos::{self, UtxoInput, UtxoOutput};
 use std::error::Error;
-use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::time::sleep;
 
 #[tokio::test]
 async fn test_payment() -> Result<(), Box<dyn Error>> {
     // setup server
-    let server_ip: &str = "[::1]";
-    let server_port: u16 = 50051;
-    let addr: SocketAddr = format!("{}:{}", server_ip, server_port).parse().unwrap();
-    let peer_server = PeerServer::new(addr);
+    let peer_server = PeerServer::new(EventBus::new().await);
     let server_handle = tokio::spawn(async { peer_server.serve().await });
 
     // buffer time
@@ -53,7 +50,7 @@ async fn test_payment() -> Result<(), Box<dyn Error>> {
     tx.outputs.push(utxo_output);
 
     // send tx
-    let peer_client: PeerClient = PeerClient::new(server_ip, server_port).await?;
+    let peer_client: PeerClient = PeerClient::new(&get_self_ip(), get_self_port() as u16).await?;
     let resp = peer_client.send_transaction(tx).await?;
 
     // buffer time
