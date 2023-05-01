@@ -1,6 +1,6 @@
 tonic::include_proto!("protos");
 use prost::Message;
-use serde::{ser::SerializeStruct, Serialize, Serializer};
+use serde::{Serialize, Serializer};
 use sha2::{Digest, Sha256};
 use std::fmt;
 use tonic::{IntoRequest, Request};
@@ -11,16 +11,16 @@ impl From<Vec<Peer>> for PeerList {
     }
 }
 
-impl Serialize for BlockHeader {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut state = serializer.serialize_struct("BlockHeader", 6)?;
-        state.serialize_field("timestamp", &self.timestamp)?;
-        state.serialize_field("nonce", &self.nonce)?;
-        state.serialize_field("difficulty", &self.difficulty)?;
-        state.serialize_field("previous_hash", &self.previous_hash)?;
-        state.serialize_field("block_index", &self.block_index)?;
-        state.serialize_field("merkle_root", &self.merkle_root)?;
-        state.end()
+impl BlockHeader {
+    pub fn hash(&self) -> Vec<u8> {
+        let mut hasher = Sha256::new();
+        hasher.update(self.timestamp.to_be_bytes());
+        hasher.update(self.nonce.to_be_bytes());
+        hasher.update(self.difficulty.to_be_bytes());
+        hasher.update(self.previous_hash.clone());
+        hasher.update(self.block_index.to_be_bytes());
+        hasher.update(self.merkle_root.clone());
+        return hasher.finalize().to_vec();
     }
 }
 

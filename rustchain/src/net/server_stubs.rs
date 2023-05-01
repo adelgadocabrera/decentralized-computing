@@ -11,13 +11,12 @@ use crate::{
     },
 };
 
+use crate::net::middleware::ClientAddressInterceptor;
 use std::net::SocketAddr;
 use std::{error::Error, sync::Arc};
 use tokio::sync::RwLock;
 use tonic::transport::server::Router;
 pub use tonic::{transport::Server, Request, Response, Status};
-
-use super::networking::get_self_addr;
 
 #[derive(Debug)]
 struct RustchainService {
@@ -36,28 +35,31 @@ pub struct PeerServer {
 }
 
 impl PeerServer {
-    pub fn new(event_bus: Arc<RwLock<EventBus>>) -> PeerServer {
-        let payment_service = RustchainService {
+    pub fn new(event_bus: Arc<RwLock<EventBus>>, addr: SocketAddr) -> PeerServer {
+        let middleware = ClientAddressInterceptor::new();
+        let payment_service = RustchainServer::with_interceptor(
+            RustchainService {
+                event_bus: event_bus.clone(),
+            },
+            middleware,
+        );
+        let p2p_service = P2pServer::new(P2pService {
             event_bus: event_bus.clone(),
-        };
-        let p2p_service = P2pService {
-            event_bus: event_bus.clone(),
-        };
-        let mut server = Server::builder();
-        let router = server
-            .add_service(RustchainServer::new(payment_service))
-            .add_service(P2pServer::new(p2p_service));
+        });
+        let router = Server::builder()
+            .add_service(payment_service)
+            .add_service(p2p_service);
         // add additional services to router here..
         return PeerServer {
             // server,
             router,
-            addr: get_self_addr(),
+            addr,
         };
     }
 
     pub async fn serve(self) -> Result<(), Box<dyn Error + Send>> {
         self.router
-            .serve(self.addr)
+            .serve::<_>(self.addr)
             .await
             .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?;
         Ok(())
@@ -68,7 +70,7 @@ impl PeerServer {
 impl Rustchain for RustchainService {
     async fn send_block(
         &self,
-        request: Request<Block>,
+        _req: Request<Block>,
     ) -> Result<Response<RustchainResponse>, Status> {
         unimplemented!();
     }
@@ -106,17 +108,20 @@ impl Rustchain for RustchainService {
 
 #[tonic::async_trait]
 impl P2p for P2pService {
-    async fn get_peers(&self, req: Request<GetPeersRequest>) -> Result<Response<PeerList>, Status> {
+    async fn get_peers(
+        &self,
+        _req: Request<GetPeersRequest>,
+    ) -> Result<Response<PeerList>, Status> {
         Ok(Response::new(PeerList::default()))
     }
 
-    async fn add_peer(&self, req: Request<Peer>) -> Result<Response<AddPeerResponse>, Status> {
+    async fn add_peer(&self, _req: Request<Peer>) -> Result<Response<AddPeerResponse>, Status> {
         Ok(Response::new(AddPeerResponse::default()))
     }
 
     async fn remove_peer(
         &self,
-        req: Request<Peer>,
+        _req: Request<Peer>,
     ) -> Result<Response<RemovePeerResponse>, Status> {
         Ok(Response::new(RemovePeerResponse::default()))
     }

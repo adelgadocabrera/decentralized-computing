@@ -1,8 +1,11 @@
 use std::{error::Error, net::SocketAddr, sync::Arc};
 
-use crate::protos::{
-    bootstrap_server::{Bootstrap, BootstrapServer},
-    Peer, PeerList, RegisterResponse,
+use crate::{
+    net::p2p::print_membership_table,
+    protos::{
+        bootstrap_server::{Bootstrap, BootstrapServer},
+        Peer, PeerList, RegisterResponse,
+    },
 };
 use tokio::sync::RwLock;
 use tonic::transport::server::Router;
@@ -77,6 +80,9 @@ impl Bootstrap for BootstrapService {
             peers: Some(peers),
             peer: Some(peer.clone()),
         };
+        println!("New Peer registration with id: {}", id);
+        // un-comment to visualize bootstrap membership table
+        // print_membership_table(String::from("BOOTSTRAP"), self.peers.read().await.clone());
         Ok(Response::new(resp))
     }
 }
@@ -85,10 +91,7 @@ impl Bootstrap for BootstrapService {
 pub mod tests {
     use std::time::Duration;
 
-    use crate::networking::{
-        client_stubs::PeerClient,
-        networking::{get_self_ip, get_self_port},
-    };
+    use crate::net::{client_stubs::PeerClient, networking::get_addr};
     use tokio::{spawn, task::JoinHandle, time::sleep};
 
     use super::*;
@@ -109,8 +112,11 @@ pub mod tests {
         let serve_handle = run_mock_server().await;
 
         // register client
+        let client_ip = "127.0.0.1";
+        let client_port = 7989;
+        let client_addr = get_addr(client_ip, client_port);
         let mut peer_client: PeerClient = PeerClient::new(SERVER_IP, SERVER_PORT).await.unwrap();
-        let resp = peer_client.register().await.unwrap();
+        let resp = peer_client.register(client_addr).await.unwrap();
         sleep(Duration::from_millis(100)).await; // buffer time
         let peers: Vec<Peer> = resp.peers.unwrap().peers;
         // bootstrap node and peer should have sames nodes
@@ -118,8 +124,8 @@ pub mod tests {
         assert_eq!(
             Peer {
                 id: 1.to_string(),
-                ip: get_self_ip(),
-                port: get_self_port()
+                ip: client_ip.to_string(),
+                port: client_port as u32,
             },
             *peers.get(0).unwrap()
         );
@@ -133,10 +139,19 @@ pub mod tests {
         let mut peer_lists: Vec<Vec<Peer>> = vec![];
 
         // register client
+        let client_ip = "127.0.0.1";
+        let client_port = 7989;
+        let client_addr = get_addr(client_ip, client_port);
         for _ in 0..10 {
             let mut peer_client: PeerClient =
                 PeerClient::new(SERVER_IP, SERVER_PORT).await.unwrap();
-            let peer_list = peer_client.register().await.unwrap().peers.unwrap().peers;
+            let peer_list = peer_client
+                .register(client_addr)
+                .await
+                .unwrap()
+                .peers
+                .unwrap()
+                .peers;
             peer_lists.push(peer_list);
         }
         // - checks that each peer is receiving i number of register clients. Meanning that the third

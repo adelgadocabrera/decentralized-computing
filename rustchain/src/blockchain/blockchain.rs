@@ -10,6 +10,7 @@ use tokio::sync::RwLock;
 #[derive(Debug)]
 pub struct Blockchain {
     blocks: Arc<RwLock<Vec<Block>>>,
+    block_hashes: Arc<RwLock<Vec<String>>>,
 }
 
 impl Blockchain {
@@ -17,36 +18,40 @@ impl Blockchain {
         let handle = Handle::current();
         let blockchain = Blockchain {
             blocks: Arc::new(RwLock::new(Vec::new())),
+            block_hashes: Arc::new(RwLock::new(vec![])),
         };
         let blockchain_arc = Arc::new(RwLock::new(blockchain));
         handle.block_on(async {
             let event_receiver = event_bus.write().await.subscribe().await;
             let blockchain_clone = blockchain_arc.clone();
-            spawn(async move {
-                blockchain_clone
-                    .write()
-                    .await
-                    .listen_for_events(event_receiver)
-                    .await;
-            });
+            spawn(async move { Blockchain::listen_for_events(blockchain_clone, event_receiver) });
             blockchain_arc
         })
-    }
-
-    async fn get_genesis(&self) -> Option<Block> {
-        let blocks = self.blocks.read().await;
-        return blocks.get(0).cloned();
     }
 
     pub async fn add_block(&mut self, block: Block) {
         self.blocks.write().await.push(block);
     }
 
-    async fn listen_for_events(&mut self, mut event_receiver: Receiver<RustchainEvent>) {
+    async fn listen_for_events(
+        b: Arc<RwLock<Blockchain>>,
+        mut event_receiver: Receiver<RustchainEvent>,
+    ) {
         while let Some(event) = event_receiver.recv().await {
             match event {
+                RustchainEvent::NewHeartbeat(_heartbeat) => {
+                    // TO DO: check whether blockchain is up to date with all the
+                    // blocks or else request peers for all previous blocks
+                    // (maybe up to a certain block?)
+                    // let block_hashes = heartbeat.block_hashes;
+                    unimplemented!()
+                }
                 RustchainEvent::NewBlock(block) => {
-                    self.add_block(block).await;
+                    let block_header = block.clone().header.unwrap();
+                    let block_hash = hex::encode(block_header.hash());
+                    let mut b_lock = b.write().await;
+                    b_lock.block_hashes.write().await.push(block_hash);
+                    b_lock.add_block(block.clone()).await;
                 }
                 _ => {
                     unimplemented!();

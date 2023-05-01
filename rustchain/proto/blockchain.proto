@@ -26,8 +26,9 @@ message RegisterResponse {
 message Null {}
 
 message Heartbeat {
-  PeerList peers      = 1;
-  Peer     peer       = 2;
+  PeerList peers                = 1;
+  Peer     peer                 = 2;
+  repeated string block_hashes  = 3;  
 }
 
 message Peer {

@@ -1,37 +1,37 @@
-use super::block::BlockHeader;
 use crate::event_bus::event_bus::EventBus;
 use crate::event_bus::events::RustchainEvent;
+use crate::protos::BlockHeader;
 use crate::protos::Transaction;
 use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Public};
 use openssl::sign::Verifier;
 use sha2::{Digest, Sha256};
-use tokio::runtime::Handle;
-use tokio::spawn;
-use tokio::sync::mpsc::Receiver;
+use std::io::Error;
 use std::io::ErrorKind;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
+use tokio::runtime::Handle;
+use tokio::spawn;
+use tokio::sync::mpsc::Receiver;
 use tokio::sync::RwLock;
-use std::io::Error;
 
 #[derive(Debug, Clone)]
 pub struct Miner {
     pending_transactions: Arc<RwLock<Vec<Transaction>>>,
     event_bus: Arc<RwLock<EventBus>>,
 }
-// mining_reward: f64, do I need to pass mining 
+// mining_reward: f64, do I need to pass mining
 // reward or should it be notified by the system
 
 impl Miner {
     pub fn new(event_bus: Arc<RwLock<EventBus>>) -> Arc<RwLock<Miner>> {
-        let miner = Miner{
+        let miner = Miner {
             pending_transactions: Arc::new(RwLock::new(vec![])),
             event_bus: event_bus.clone(),
         };
         let miner_arc = Arc::new(RwLock::new(miner));
         let handle = Handle::current();
-        handle.block_on(async { 
+        handle.block_on(async {
             let event_receiver = event_bus.write().await.subscribe().await;
             let miner_clone = miner_arc.clone();
             spawn(async move {
@@ -39,7 +39,7 @@ impl Miner {
                     .write()
                     .await
                     .listen_for_events(event_receiver)
-                .await;
+                    .await;
             });
         });
         miner_arc
@@ -54,6 +54,9 @@ impl Miner {
                 RustchainEvent::NewTransaction(transaction) => {
                     unimplemented!()
                 }
+                _ => {
+                    unimplemented!()
+                }
             }
         }
     }
@@ -66,14 +69,18 @@ impl Miner {
         difficulty: u64,
     ) -> Result<(Vec<u8>, u64), Box<dyn std::error::Error>> {
         for transaction in transactions {
-            let public_key =
-                PKey::public_key_from_pem(&transaction.from_addr.as_bytes()).unwrap();
-            if !verify_signature(
-                &public_key,
-                &transaction.signature,
-                &transaction.to_bytes().unwrap(),
-            ) {
-               return Err(Box::new(Error::new(ErrorKind::Other, "Error verifying tx using public key")));
+            for input in transaction.inputs.iter() {
+                let public_key = PKey::public_key_from_pem(&input.public_key).unwrap();
+                if !verify_signature(
+                    &public_key,
+                    &input.signature,
+                    &transaction.to_bytes().unwrap(),
+                ) {
+                    return Err(Box::new(Error::new(
+                        ErrorKind::Other,
+                        "Error verifying tx using public key",
+                    )));
+                }
             }
         }
         let mut nonce = 0;
@@ -82,7 +89,7 @@ impl Miner {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
-            // Verify the digital signatures of the transactions
+        // Verify the digital signatures of the transactions
 
         loop {
             nonce = nonce + 1;
@@ -95,11 +102,7 @@ impl Miner {
                 merkle_root: calculate_merkle_root(&transactions.to_owned()),
             };
 
-            // Serialize && Hash the header to a byte array
-            let mut hasher = Sha256::new();
-            let header_bytes = serde_json::to_string(&header).unwrap();
-            hasher.update(&header_bytes);
-            hash = hasher.finalize().to_vec();
+            hash = header.hash();
 
             if satisfies_difficulty(&hash, header.difficulty.to_owned()) {
                 return Ok((hash.to_vec(), nonce));

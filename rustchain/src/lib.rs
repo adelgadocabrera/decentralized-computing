@@ -1,5 +1,6 @@
 pub mod blockchain;
 pub mod event_bus;
-pub mod networking;
+pub mod miner;
+pub mod net;
 pub mod protos;
 pub mod utils;

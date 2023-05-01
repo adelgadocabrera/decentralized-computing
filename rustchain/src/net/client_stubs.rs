@@ -1,10 +1,10 @@
-use crate::networking::networking::{get_self_ip, get_self_port};
 use crate::protos::bootstrap_client::BootstrapClient;
 use crate::protos::p2p_client::P2pClient;
 use crate::protos::rustchain_client::RustchainClient;
 use crate::protos::{GetPeersRequest, Heartbeat, Null, Peer, PeerList, RegisterResponse};
 use crate::protos::{Response as ProtoResponse, Transaction};
 use std::error::Error;
+use std::net::SocketAddr;
 use tonic::transport::Channel;
 use tonic::transport::Endpoint;
 use tonic::Request;
@@ -30,12 +30,12 @@ impl PeerClient {
         })
     }
 
-    pub async fn register(&mut self) -> Result<RegisterResponse, Box<dyn Error>> {
+    pub async fn register(&mut self, addr: SocketAddr) -> Result<RegisterResponse, Box<dyn Error>> {
         // peer id will be assigned upon registration
         let peer = Peer {
             id: String::from(""),
-            ip: get_self_ip(),
-            port: get_self_port(),
+            ip: addr.clone().ip().to_string(),
+            port: addr.clone().port().into(),
         };
         let req = self.bootstrap.register(Request::new(peer)).await;
         match req {
@@ -71,10 +71,12 @@ impl PeerClient {
         &mut self,
         peers: PeerList,
         peer: Peer,
+        block_hashes: Vec<String>,
     ) -> Result<Null, Box<dyn Error>> {
         let heartbeat = Heartbeat {
             peers: Some(peers),
             peer: Some(peer),
+            block_hashes,
         };
         let req = self.p2p.send_heartbeat(Request::new(heartbeat)).await;
         match req {
