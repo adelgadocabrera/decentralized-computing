@@ -37,7 +37,7 @@ impl P2p {
         spawn(async { server.serve().await });
         let peer_list: Vec<Peer> = vec![];
         let bootstrap_conn = PeerClient::new(boot_node.ip.as_str(), boot_node.port as u16).await;
-        // gotta figure out a cleaner way of avoiding this ugly nesting
+        // gotta figure out a cleaner way of avoiding this ugly match nesting
         match bootstrap_conn {
             Ok(mut peer) => {
                 let resp = peer.register(addr).await;
