@@ -1,6 +1,6 @@
 use crate::event_bus::event_bus::EventBus;
 use crate::event_bus::events::RustchainEvent;
-use crate::protos::{Peer, PeerList, RegisterResponse};
+use crate::protos::{Peer, PeerList};
 use std::collections::VecDeque;
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -11,6 +11,8 @@ use tokio::sync::RwLock;
 
 use super::client_stubs::PeerClient;
 use super::server_stubs::PeerServer;
+
+const MAX_PEERS_LEN: usize = 32;
 
 pub struct P2p {
     event_bus: Arc<RwLock<EventBus>>,
@@ -97,6 +99,7 @@ impl P2p {
         while let Some(event) = event_receiver.recv().await {
             match event {
                 RustchainEvent::NewHeartbeat(heartbeat) => {
+                    // add membership table and peer who sent heartbeat
                     P2p::add_peers(p2p.clone(), heartbeat.peers.unwrap()).await;
                     P2p::add_peer(p2p.clone(), heartbeat.peer.unwrap()).await;
                 }
@@ -111,17 +114,14 @@ impl P2p {
     }
 
     async fn add_peer(p2p: Arc<RwLock<P2p>>, peer: Peer) {
-        let curr_peer_list = p2p.write().await.peers.clone();
+        let lock = p2p.write().await;
+        let self_id = lock.id.clone();
+        let curr_peer_list = lock.peers.clone();
         let mut peer_lock = curr_peer_list.write().await;
-        let mut has_peer = false;
-        for p in peer_lock.iter() {
-            if p.id == peer.id {
-                has_peer = true;
-            }
+        if self_id == peer.id || peer_lock.iter().any(|x| x.id == peer.id) {
+            return;
         }
-        if !has_peer {
-            peer_lock.push(peer);
-        }
+        peer_lock.push(peer);
     }
 
     async fn add_peers(p2p: Arc<RwLock<P2p>>, new_peer_list: PeerList) {
@@ -129,15 +129,11 @@ impl P2p {
         let mut peer_lock = curr_peer_list.write().await;
         let new_peers = new_peer_list.peers;
         for peer in new_peers {
-            let mut has_peer = false;
-            for p in peer_lock.iter() {
-                if p.id == peer.id {
-                    has_peer = true;
-                }
+            let self_id = p2p.read().await.id.clone();
+            if peer.id == self_id || peer_lock.iter().any(|x| x.id == peer.id) {
+                continue;
             }
-            if !has_peer {
-                peer_lock.push(peer);
-            }
+            peer_lock.push(peer.clone());
         }
     }
 
@@ -166,46 +162,54 @@ impl P2p {
 
     async fn rebalance(peers: Arc<RwLock<Vec<Peer>>>, peer: Peer) {
         let mut sorted_peers = peers.read().await.clone();
-        let id = peer.id.clone();
-
+        let self_id = peer.id.clone();
         // Sort peers by Id
-        sorted_peers.sort_by(|a, b| a.id.cmp(&b.id));
-
-        let self_index: usize;
-        if sorted_peers.contains(&peer) {
-            self_index = sorted_peers
-                .iter()
-                .position(|p| p.to_owned() == peer)
-                .unwrap();
-        } else {
-            // Insert SelfId into the sorted list
-            self_index = sorted_peers
-                .binary_search_by(|peer| peer.id.clone().cmp(&id))
-                .unwrap_or_else(|x| x);
-            sorted_peers.insert(self_index, peer);
+        sorted_peers.sort_by(sort_peers_by_id);
+        if sorted_peers.len() < MAX_PEERS_LEN {
+            *peers.write().await = sorted_peers;
+            return;
         }
 
-        // Create a double-ended queue and rotate it to set the SelfId as the first element
-        let mut deque: VecDeque<Peer> = sorted_peers.into();
-        deque.rotate_left(self_index);
-
-        // Remove the SelfId from the deque
-        deque.pop_front();
-
-        // Calculate the number of nodes to select on each side
-        let total_peers = deque.len();
-        let num_peers_to_select = usize::min(16, total_peers / 2);
-
-        // Select num_peers_to_select before and after the SelfId, considering the list as a cycle
-        let closest_peers = deque
-            .clone()
-            .into_iter()
-            .take(num_peers_to_select)
-            .chain(deque.clone().into_iter().rev().take(num_peers_to_select))
-            .collect::<Vec<Peer>>();
+        // Insert SelfId into the sorted list
+        let mut self_index = 0;
+        for i in 0..sorted_peers.len() {
+            if sorted_peers.get(i).unwrap().id.parse::<u32>().unwrap()
+                > self_id.parse::<u32>().unwrap()
+            {
+                self_index = i;
+                break;
+            }
+        }
+        let mut closest_peers = vec![];
+        let mut i: usize; 
+        let mut j: usize;
+        if self_index == 0 {
+            i = self_index;
+            j = self_index + 1;
+        } else {
+            i = self_index - 1;
+            j = self_index;
+        }
+        let mut counter: usize = 0;
+        while counter < MAX_PEERS_LEN {
+            counter += 2;
+            closest_peers.push(sorted_peers.get(i).unwrap().clone());
+            closest_peers.push(sorted_peers.get(j).unwrap().clone());
+            if i == 0 {
+                i = sorted_peers.len() - 1;
+            } else {
+                i -= 1;
+            };
+            if j == sorted_peers.len() - 1 {
+                j = 0;
+            } else {
+                j += 1;
+            }
+        }
+        closest_peers.sort_by(sort_peers_by_id);
 
         // Update the peers field with the new list of closest peers
-        *peers.write().await = closest_peers;
+        *peers.write().await = closest_peers.clone();
     }
 
     pub fn id(&self) -> String {
@@ -220,6 +224,12 @@ impl P2p {
         let peers_guard = self.peers.read().await;
         peers_guard.clone()
     }
+}
+
+fn sort_peers_by_id(a: &Peer, b: &Peer) -> std::cmp::Ordering {
+    a.id.parse::<u32>()
+        .unwrap_or(0)
+        .cmp(&b.id.parse::<u32>().unwrap_or(0))
 }
 
 pub fn print_membership_table(id: String, peers: Vec<Peer>) {
@@ -275,7 +285,6 @@ pub mod tests {
 
     #[tokio::test]
     async fn test_heartbeat() {
-        println!("testing registration");
         let (boot_peer, bootstrap) = get_bootstrap_node();
         spawn(async { bootstrap.serve().await });
         sleep(Duration::from_millis(100)).await;
@@ -310,18 +319,20 @@ pub mod tests {
         .await;
         sleep(Duration::from_secs(2)).await;
 
-        // print_membership_table(peer_1.read().await.id(), peer_1.read().await.peers.read().await.clone());
-        // print_membership_table(peer_2.read().await.id(), peer_2.read().await.peers.read().await.clone());
-        // print_membership_table(peer_3.read().await.id(), peer_3.read().await.peers.read().await.clone());
-        // print_membership_table(peer_4.read().await.id(), peer_4.read().await.peers.read().await.clone());
-        // assert_eq!(
-        //     *peer_3.read().await.peers.read().await,
-        //     *peer_4.read().await.peers.read().await
-        // );
-        // assert_eq!(
-        //     *peer_1.read().await.peers.read().await,
-        //     *peer_3.read().await.peers.read().await,
-        // );
+        for i in 1..5 {
+            if i > 1 {
+                assert!(peer_1.read().await.peers.read().await.iter().any(|p| (*p.id).parse::<u32>().unwrap() == i));
+            }
+            if i == 1 || i > 3 {
+                assert!(peer_2.read().await.peers.read().await.iter().any(|p| (*p.id).parse::<u32>().unwrap() == i));
+            }
+            if (i >= 1 && i <= 2) || (i == 4) {
+                assert!(peer_3.read().await.peers.read().await.iter().any(|p| (*p.id).parse::<u32>().unwrap() == i));
+            }
+            if i < 4 {
+                assert!(peer_4.read().await.peers.read().await.iter().any(|p| (*p.id).parse::<u32>().unwrap() == i));
+            }
+        }
     }
 
     #[tokio::test]
@@ -355,26 +366,131 @@ pub mod tests {
     }
 
     #[tokio::test]
-    async fn test_rebalance() {
+    async fn test_rebalance_below_max_size() {
         let event_bus = EventBus::new().await;
         let peer_1 = P2p::new(event_bus, Peer::default(), addr_1(), heartbeat_interval()).await;
         let mut expected = vec![];
         for i in (0..5).rev() {
             let peer = Peer {
                 id: (i * 2).to_string(),
-                ip: String::from("[::1]"),
-                port: 5000,
+                ..Peer::default()
             };
-            peer_1.write().await.peers.write().await.push(peer.clone());
+            // inserting nodes in different order
+            let node_lock = peer_1.write().await;
+            let mut peers_lock = node_lock.peers.write().await;
+            if i % 2 == 0 {
+                peers_lock.insert(0, peer.clone());
+            } else {
+                peers_lock.push(peer.clone());
+            }
             expected.insert(0, peer.clone());
         }
         let peer = Peer {
             id: 5.to_string(),
-            ip: String::from("[::1]"),
-            port: 5001,
+            ..Peer::default()
         };
         P2p::rebalance(peer_1.read().await.peers.clone(), peer.clone()).await;
-        expected.insert(3, peer.clone());
         assert_eq!(expected, peer_1.read().await.peers.read().await.clone());
+    }
+
+    #[tokio::test]
+    async fn test_rebalance_above_max_size() {
+        let event_bus = EventBus::new().await;
+        let peer_1 = P2p::new(event_bus, Peer::default(), addr_1(), heartbeat_interval()).await;
+        let target_peer_id = 13;
+        let num_peers = 32;
+        let target_peer = Peer {
+            id: target_peer_id.to_string(),
+            ..Peer::default()
+        };
+
+        let mut all_peers = vec![];
+        for i in (0..num_peers).rev() {
+            let peer = Peer {
+                id: (i * 2).to_string(),
+                ..Peer::default()
+            };
+            all_peers.push(peer.clone());
+        }
+
+        // The expected list should contain the closest 32 peers.
+        let mut expected = all_peers.into_iter().take(32).collect::<Vec<Peer>>();
+        expected.sort_by(sort_peers_by_id);
+
+        // Insert peers into the peers list in a different order.
+        for i in (0..num_peers).rev() {
+            let peer = Peer {
+                id: (i * 2).to_string(),
+                ..Peer::default()
+            };
+            let node_lock = peer_1.write().await;
+            let mut peers_lock = node_lock.peers.write().await;
+            if i % 2 == 0 {
+                peers_lock.insert(0, peer.clone());
+            } else {
+                peers_lock.push(peer.clone());
+            }
+        }
+
+        // Run the rebalance function.
+        P2p::rebalance(peer_1.read().await.peers.clone(), target_peer.clone()).await;
+
+        // Check the results.
+        let rebalanced = peer_1.read().await.peers.read().await.clone();
+        assert_eq!(expected, rebalanced);
+    }
+
+    #[tokio::test]
+    async fn test_rebalance_above_max_size_cyclical() {
+        let event_bus = EventBus::new().await;
+        let peer_1 = P2p::new(event_bus, Peer::default(), addr_1(), heartbeat_interval()).await;
+        let target_peer_id = 53;
+        let num_peers = 33;
+        let target_peer = Peer {
+            id: target_peer_id.to_string(),
+            ..Peer::default()
+        };
+
+        let mut all_peers = vec![];
+        for i in (0..10).rev() {
+            let peer = Peer {
+                id: (i * 2).to_string(),
+                ..Peer::default()
+            };
+            all_peers.push(peer.clone());
+        }
+        for i in (11..num_peers).rev() {
+            let peer = Peer {
+                id: (i * 2).to_string(),
+                ..Peer::default()
+            };
+            all_peers.push(peer.clone());
+        }
+
+        // The expected list should contain the closest 32 peers.
+        let mut expected = all_peers.into_iter().take(32).collect::<Vec<Peer>>();
+        expected.sort_by(sort_peers_by_id);
+
+        // Insert peers into the peers list in a different order.
+        for i in (0..num_peers).rev() {
+            let peer = Peer {
+                id: (i * 2).to_string(),
+                ..Peer::default()
+            };
+            let node_lock = peer_1.write().await;
+            let mut peers_lock = node_lock.peers.write().await;
+            if i % 2 == 0 {
+                peers_lock.insert(0, peer.clone());
+            } else {
+                peers_lock.push(peer.clone());
+            }
+        }
+
+        // Run the rebalance function.
+        P2p::rebalance(peer_1.read().await.peers.clone(), target_peer.clone()).await;
+
+        // Check the results.
+        let rebalanced = peer_1.read().await.peers.read().await.clone();
+        assert_eq!(expected, rebalanced);
     }
 }
