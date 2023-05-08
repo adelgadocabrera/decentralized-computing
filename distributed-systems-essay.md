@@ -14,11 +14,11 @@ As mentioned, the process is going to follow a bottom-up approach, starting from
 In contrast to what many people think belief nowadays, in the world of microservices and service-oriented architecture a system composed by only one machine offers many benefits, as well as limitations. 
 
 ### Advantages of running a single machine:
-    a. Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
-    b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components of a single machine. Although in the other hand, consumer electronics have become very affordable and have a decent amount of power. This made distributed computing more affordable.
-    c. Data consistency. Data has become the most pivotal piece, everything evolves around the data. Handling data in a single machine is is far more simple than having it distributed in different machines. If we were to simplify this even further and assume there was only one thread, data would always remain consistent and events will always be causal. On the other hand it is easy to foresee this piece to become a huge bottleneck.   
-    d. Performance. There is nothing as performant as running everything locally, data access and information sharing between processes are shared locally, avoiding all possible network delays and latencies that exist in a distributed storage system.  
-    e. Security. A single machine will be less exposed to attacks and the lack of information sharing with other machines makes it impossible to intercept any messages.  
+a. Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
+b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components of a single machine. Although in the other hand, consumer electronics have become very affordable and have a decent amount of power. This made distributed computing more affordable.
+c. Data consistency. Data has become the most pivotal piece, everything evolves around the data. Handling data in a single machine is is far more simple than having it distributed in different machines. If we were to simplify this even further and assume there was only one thread, data would always remain consistent and events will always be causal. On the other hand it is easy to foresee this piece to become a huge bottleneck.   
+d. Performance. There is nothing as performant as running everything locally, data access and information sharing between processes are shared locally, avoiding all possible network delays and latencies that exist in a distributed storage system.  
+e. Security. A single machine will be less exposed to attacks and the lack of information sharing with other machines makes it impossible to intercept any messages.  
 
 ### Limitations and Physical problems a single machine may suffer from:
 a. Limited resources (CPU, memory, storage). 
