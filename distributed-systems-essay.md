@@ -30,13 +30,9 @@ a. Limited resources (CPU, memory, storage). The main problem is all the resourc
 b. Scalability issues (inability to handle increased workload). This is what happens when the resources of the machine are maxed out. There is no way of scaling, besides vertically. Although consumer electronics have become more affordable and even high end components are not as expensive, there is a limit on how many cores a CPU may have or how much RAM or disk space a machine may have. This can become very expensive and we are not even accounting for downtime for upgrading. 
 
 c. Fault tolerance concerns (single point of failure). By far the most important concern when running a single application. Single point of failure. It can happen due to many reasons, may be a hardware failures, software failures, human errors or even environmental failures.
-
     - Hardware failures (disk, CPU, memory, power supply). It is very common for hard drives to fail, RAM sticks to become faulty, or any other component may fail. It is common to configure the disks in RAID for redundancy, have more than one CPU or even to have more than one power supply too. Nonetheless this won't completely guarantee complete prevention from hardware failures. 
-
     - Software failures (bugs, crashes, memory leaks). There are a myriad of things that can go wrong within a single machine and they are not always intuitive. There could be a systematic error withing the OS, a software bug that causes an application to crash given a certain input, cascading failures where a small fault my trigger a series of consecutive failures. 
-
     - Human errors
-
     - Environmental issues (power outages, temperature, humidity)
 
 ## 3. Introducing multiple machines (beginnings of a distributed system):
