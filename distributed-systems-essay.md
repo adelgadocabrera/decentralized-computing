@@ -1,5 +1,70 @@
 # Distributed Systems Essay
 
+Table of contents:
+1. Introduction
+2. Single machine 
+
+## 1. Introduction 
+
+The internet has been around for quite sometime now, and many people have forgotten it wasn't once as reliable as it is now nor are the machines that participate in it. The proposal for this essay is not to cover all the topics related to distributed systems but to shed some light over the complexities that arise in distributed systems, learn why we build such complicated systems, and what problems arise in the process. 
+
+As mentioned, the process is going to follow a bottom-up approach, starting from the simplest form which is running a single machine and evolving it into a complex system. 
+
+## 2. Single machine 
+In contrast to what many people think belief nowadays, in the world of microservices and service-oriented architecture a system composed by only one machine offers many benefits, as well as limitations. 
+
+### Advantages of running a single machine:
+    a. Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
+    b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components of a single machine. Although in the other hand, consumer electronics have become very affordable and have a decent amount of power. This made distributed computing more affordable.
+    c. Data consistency. Data has become the most pivotal piece, everything evolves around the data. Handling data in a single machine is is far more simple than having it distributed in different machines. If we were to simplify this even further and assume there was only one thread, data would always remain consistent and events will always be causal. On the other hand it is easy to foresee this piece to become a huge bottleneck.   
+    d. Performance. There is nothing as performant as running everything locally, data access and information sharing between processes are shared locally, avoiding all possible network delays and latencies that exist in a distributed storage system.  
+    e. Security. A single machine will be less exposed to attacks and the lack of information sharing with other machines makes it impossible to intercept any messages.  
+
+### Limitations and Physical problems a single machine may suffer from:
+a. Limited resources (CPU, memory, storage). 
+b. Scalability issues (inability to handle increased workload)
+c. Fault tolerance concerns (single point of failure)
+d. Hardware failures (disk, CPU, memory, power supply)
+e. Software failures (bugs, crashes, memory leaks)
+f. Environmental issues (power outages, temperature, humidity)
+
+## 3. Introducing multiple machines (beginnings of a distributed system):
+    a. Increased resources and capacity
+    b. Improved fault tolerance (redundancy)
+    c. Initial challenges in coordinating and managing resources
+
+## 4. Motivation for distributed fault-tolerant systems:
+    a. Addressing single point of failure
+    b. Providing redundancy and failover capabilities
+    c. Ensuring data durability and availability
+
+## 5. Interconnection between machines:
+    a. Networking basics (LAN, WAN, Internet)
+    b. Network latency and bandwidth limitations
+    c. Data consistency and synchronization challenges
+
+## 6. Communication methods in distributed systems:
+    a. Synchronous communication (blocking, immediate response)
+    b. Asynchronous communication (non-blocking, delayed response)
+    c. Message passing and remote procedure calls (RPC)
+
+## 7. Problems arising from relying on the internet:
+    a. Network partitions and failures
+    b. Security concerns (authentication, authorization, encryption)
+    c. Performance variability due to distance and network congestion
+
+## 8. Distributed systems concepts and challenges:
+    a. Consistency models (eventual consistency, strong consistency)
+    b. Replication strategies (active/passive, active/active)
+    c. Load balancing and resource allocation
+
+## 9. Dealing with failures in distributed systems:
+    a. Fault detection and monitoring
+    b. Fault recovery and failover mechanisms
+    c. Data backups and disaster recovery planning
+
+--- 
+
 Why is it hard to build distributed systems? 
 _Source Designing Data Intensive Applications by Martin Kleppmann._
 

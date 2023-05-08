@@ -1,7 +1,6 @@
 use crate::event_bus::event_bus::EventBus;
 use crate::event_bus::events::RustchainEvent;
 use crate::protos::{Peer, PeerList};
-use std::collections::VecDeque;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
@@ -170,7 +169,6 @@ impl P2p {
             return;
         }
 
-        // Insert SelfId into the sorted list
         let mut self_index = 0;
         for i in 0..sorted_peers.len() {
             if sorted_peers.get(i).unwrap().id.parse::<u32>().unwrap()
@@ -319,6 +317,7 @@ pub mod tests {
         .await;
         sleep(Duration::from_secs(2)).await;
 
+        print_membership_table(1.to_string(), peer_1.read().await.peers.read().await.clone());
         for i in 1..5 {
             if i > 1 {
                 assert!(peer_1.read().await.peers.read().await.iter().any(|p| (*p.id).parse::<u32>().unwrap() == i));
