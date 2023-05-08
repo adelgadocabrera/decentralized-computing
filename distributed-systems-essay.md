@@ -1,8 +1,16 @@
 # Distributed Systems Essay
 
 Table of contents:
-1. Introduction
-2. Single machine 
+- [1. Introduction](## 1. Introduction)
+- [2. Single machine](## 2. Single machine)
+- [3. Introducing multiple machines (beginnings of a distributed system)](## 3. Introducing multiple machines (beginnings of a distributed system))
+- [4. Motivation for distributed fault-tolerant systems](## 4. Motivation for distributed fault-tolerant systems)
+- [5. Interconnection between machines](## 5. Interconnection between machines)
+- [6. Communication methods in distributed systems](## 6. Communication methods in distributed systems)
+- [7. Problems arising from relying on the internet](## 7. Problems arising from relying on the internet)
+- [8. Distributed systems concepts and challenges](## 8. Distributed systems concepts and challenges)
+- [9. Dealing with failures in distributed systems](## 9. Dealing with failures in distributed systems)
+
 
 ## 1. Introduction 
 
@@ -13,7 +21,7 @@ As mentioned, the process is going to follow a bottom-up approach, starting from
 ## 2. Single machine 
 In contrast to what many people think belief nowadays, in the world of microservices and service-oriented architecture a system composed by only one machine offers many benefits, as well as limitations. 
 
-### Advantages of running a single machine:
+### Advantages of running a single machine
 a. Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
 
 b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components of a single machine. Although in the other hand, consumer electronics have become very affordable and have a decent amount of power. This made distributed computing more affordable.
@@ -24,52 +32,52 @@ d. Performance. There is nothing as performant as running everything locally, da
 
 e. Security. A single machine will be less exposed to attacks and the lack of information sharing with other machines makes it impossible to intercept any messages.  
 
-### Limitations and physical problems a single machine may suffer from:
+### Limitations and physical problems a single machine may suffer from
 a. Limited resources (CPU, memory, storage). The main problem is all the resources are shared among all running applications. Therefore a high workload on one app may affect the overall performance, slow response times and lead even to crashes.
 
 b. Scalability issues (inability to handle increased workload). This is what happens when the resources of the machine are maxed out. There is no way of scaling, besides vertically. Although consumer electronics have become more affordable and even high end components are not as expensive, there is a limit on how many cores a CPU may have or how much RAM or disk space a machine may have. This can become very expensive and we are not even accounting for downtime for upgrading. 
 
-c. Fault tolerance concerns (single point of failure). By far the most important concern when running a single application. Single point of failure. It can happen due to many reasons, may be a hardware failures, software failures, human errors or even environmental failures.
+c. Fault tolerance concerns (single point of failure). By far the most important concern when running a single application. Single point of failure. It can happen due to many reasons, including hardware failures, software failures and environmental issues.
 
 - Hardware failures (disk, CPU, memory, power supply). It is very common for hard drives to fail, RAM sticks to become faulty, or any other component may fail. It is common to configure the disks in RAID for redundancy, have more than one CPU or even to have more than one power supply too. Nonetheless this won't completely guarantee complete prevention from hardware failures. 
 
 - Software failures (bugs, crashes, memory leaks). There are a myriad of things that can go wrong within a single machine and they are not always intuitive. There could be a systematic error withing the OS, a software bug that causes an application to crash given a certain input, cascading failures where a small fault my trigger a series of consecutive failures. 
 
-- Human errors
+- Environmental issues (power outages, temperature, humidity). Despite hardware redundancy, a machine won't be able to survive a power outage, or even worse, earthquakes or any other unpredictable natural disasters. Temperature and humidity will also greatly affect components lifespan.
 
-- Environmental issues (power outages, temperature, humidity)
+## 3. Introducing multiple machines (beginnings of a distributed system)
 
-## 3. Introducing multiple machines (beginnings of a distributed system):
+
     a. Increased resources and capacity
     b. Improved fault tolerance (redundancy)
     c. Initial challenges in coordinating and managing resources
 
-## 4. Motivation for distributed fault-tolerant systems:
+## 4. Motivation for distributed fault-tolerant systems
     a. Addressing single point of failure
     b. Providing redundancy and failover capabilities
     c. Ensuring data durability and availability
 
-## 5. Interconnection between machines:
+## 5. Interconnection between machines
     a. Networking basics (LAN, WAN, Internet)
     b. Network latency and bandwidth limitations
     c. Data consistency and synchronization challenges
 
-## 6. Communication methods in distributed systems:
+## 6. Communication methods in distributed systems
     a. Synchronous communication (blocking, immediate response)
     b. Asynchronous communication (non-blocking, delayed response)
     c. Message passing and remote procedure calls (RPC)
 
-## 7. Problems arising from relying on the internet:
+## 7. Problems arising from relying on the internet
     a. Network partitions and failures
     b. Security concerns (authentication, authorization, encryption)
     c. Performance variability due to distance and network congestion
 
-## 8. Distributed systems concepts and challenges:
+## 8. Distributed systems concepts and challenges
     a. Consistency models (eventual consistency, strong consistency)
     b. Replication strategies (active/passive, active/active)
     c. Load balancing and resource allocation
 
-## 9. Dealing with failures in distributed systems:
+## 9. Dealing with failures in distributed systems
     a. Fault detection and monitoring
     b. Fault recovery and failover mechanisms
     c. Data backups and disaster recovery planning
