@@ -21,35 +21,35 @@ As mentioned, the process is going to follow a bottom-up approach, starting from
 In contrast to what many people think belief nowadays, in the world of microservices and service-oriented architecture a system composed by only one machine offers many benefits, as well as limitations. 
 
 ### Advantages of running a single machine
-a. Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
+- Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
 
-b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components for a single machine. Although on the other hand, consumer electronics have become very affordable and powerful. This made distributed computing more affordable as adding more machines not always incured huge bills.
+- Cost effectiveness. Generally speaking it is indeed cheaper to buy the components for a single machine. Although on the other hand, consumer electronics have become very affordable and powerful. This made distributed computing more affordable as adding more machines not always incured huge bills.
 
-c. Data consistency. Data has become the most pivotal piece, everything evolves around the data. Handling data in a single machine is is far more simple than having it distributed in different machines. If we were to simplify this even further and assume there was only one thread, data would always remain consistent and events will always be causal. On the other hand it is easy to foresee this piece to become a huge bottleneck.   
+- Data consistency. Data has become the most pivotal piece, everything evolves around the data. Handling data in a single machine is is far more simple than having it distributed in different machines. If we were to simplify this even further and assume there was only one thread, data would always remain consistent and events will always be causal. On the other hand it is easy to foresee this piece to become a huge bottleneck.   
 
-d. Performance. There is nothing as performant as running everything locally, data access and information sharing between processes are shared locally, avoiding all possible network delays and latencies that exist in a distributed storage system.  
+- Performance. There is nothing as performant as running everything locally, data access and information sharing between processes are shared locally, avoiding all possible network delays and latencies that exist in a distributed storage system.  
 
-e. Security. A single machine will be less exposed to attacks and the lack of information sharing with other machines makes it impossible to intercept any messages.  
+- Security. A single machine will be less exposed to attacks and the lack of information sharing with other machines makes it impossible to intercept any messages.  
 
 ### Limitations and physical problems a single machine may suffer from
-a. Limited resources (CPU, memory, storage). The main problem is all the resources are shared among all running applications. Therefore a high workload on one app may affect the overall performance, slow response times and lead even to crashes.
+- Limited resources (CPU, memory, storage). The main problem is all the resources are shared among all running applications. Therefore a high workload on one app may affect the overall performance, slow response times and lead even to crashes.
 
-b. Scalability issues (inability to handle increased workload). This is what happens when the resources of the machine are maxed out. There is no way of scaling, besides vertically. Although consumer electronics have become more affordable and even high end components are not as expensive, there is a limit on how many cores a CPU may have or how much RAM or disk space a machine may have. This can become very expensive and we are not even accounting for downtime for upgrading. 
+- Scalability issues (inability to handle increased workload). This is what happens when the resources of the machine are maxed out. There is no way of scaling, besides vertically. Although consumer electronics have become more affordable and even high end components are not as expensive, there is a limit on how many cores a CPU may have or how much RAM or disk space a machine may have. This can become very expensive and we are not even accounting for downtime for upgrading. 
 
-c. Fault tolerance concerns (single point of failure). By far the most important concern when running a single application. Single point of failure. It can happen due to many reasons, including hardware failures, software failures and environmental issues.
+- Fault tolerance concerns (single point of failure). By far the most important concern when running a single application. Single point of failure. It can happen due to many reasons, including hardware failures, software failures and environmental issues.
 
-- Hardware failures (disk, CPU, memory, power supply). It is very common for hard drives to fail, RAM sticks to become faulty, or any other component may fail. It is common to configure the disks in RAID for redundancy, have more than one CPU or even to have more than one power supply too. Nonetheless this won't completely guarantee complete prevention from hardware failures. 
+    - Hardware failures (disk, CPU, memory, power supply). It is very common for hard drives to fail, RAM sticks to become faulty, or any other component may fail. It is common to configure the disks in RAID for redundancy, have more than one CPU or even to have more than one power supply too. Nonetheless this won't completely guarantee complete prevention from hardware failures. 
 
-- Software failures (bugs, crashes, memory leaks). There are a myriad of things that can go wrong within a single machine and they are not always intuitive. There could be a systematic error withing the OS, a software bug that causes an application to crash given a certain input, cascading failures where a small fault my trigger a series of consecutive failures. 
+    - Software failures (bugs, crashes, memory leaks). There are a myriad of things that can go wrong within a single machine and they are not always intuitive. There could be a systematic error withing the OS, a software bug that causes an application to crash given a certain input, cascading failures where a small fault my trigger a series of consecutive failures. 
 
-- Environmental issues (power outages, temperature, humidity). Despite hardware redundancy, a machine won't be able to survive a power outage, or even worse, earthquakes or any other unpredictable natural disasters. Temperature and humidity will also greatly affect components lifespan.
+    - Environmental issues (power outages, temperature, humidity). Despite hardware redundancy, a machine won't be able to survive a power outage, or even worse, earthquakes or any other unpredictable natural disasters. Temperature and humidity will also greatly affect components lifespan.
 
 ## 3. Motivation for distributed fault-tolerant systems
 As applications, traffic and specially data grows, the limitations of single machines become more pronounced. There is a need to transition into a system that can provide more resources, better fault tolerance and the ability to scale. We can address these challenges by adding multiple machines which should solve the main pain points of our previous system:
 
-a. Fault tolerance, redundancy and single point of failure. In the single machine setup, hardware or software failure will automatically lead to system downtime until the fault is resolved. By adding more machines we can solve to big problems when it comes to failures: the system remains operational even in the presence of a fault, and redundancy, data is no lost and remains available.
+- Fault tolerance, redundancy and single point of failure. In the single machine setup, hardware or software failure will automatically lead to system downtime until the fault is resolved. By adding more machines we can solve to big problems when it comes to failures: the system remains operational even in the presence of a fault, and redundancy, data is no lost and remains available.
 
-b. Scalability. By distributing computation and data across different machines it is possible to handle greater workloads than it would ever be in a single machine. Specially in big data where large amounts of data must be processed and analyzed. To overcome peaks of computation or to scale up as the user base grows one can scale the system horizontally, that is, by adding more machines to overcome the demand. Of course this will increase the complexity of the system.
+- Scalability. By distributing computation and data across different machines it is possible to handle greater workloads than it would ever be in a single machine. Specially in big data where large amounts of data must be processed and analyzed. To overcome peaks of computation or to scale up as the user base grows one can scale the system horizontally, that is, by adding more machines to overcome the demand. Of course this will increase the complexity of the system.
 
 ## 4. Introducing multiple machines 
 There are initial challenges in coordinating and managing resources. While introducing multiple machines can bring significant benefits, it also presents new challenges. Coordinating and managing resources across multiple machines can be complex, as developers and system admins must deal with issues such as data consistency, load balancing, and fault tolerance. Additionally, networking between machines introduces latency, which can affect application performance. These challenges have a huge repercussion in planning, design, and implementation to ensure that the distributed system operates effectively and efficiently.
@@ -63,9 +63,9 @@ In order to measure the design and implementation of a distributed system there 
 ## 5. Interconnection between machines
 The main an added complexity in the transition from a single machine to a distributed system is networking. 
 
-a. Networking basics (LAN, WAN, Internet)
-b. Network latency and bandwidth limitations
-c. Data consistency and synchronization challenges
+- Networking basics (LAN, WAN, Internet)
+- Network latency and bandwidth limitations
+- Data consistency and synchronization challenges
 
 ## 6. Communication methods in distributed systems
     a. Synchronous communication (blocking, immediate response)
