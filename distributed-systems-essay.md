@@ -2,9 +2,9 @@
 
 Table of contents:
 1. Introduction
-2. Single machine 
+2. Single machine architecture
 3. Motivation for distributed fault-tolerant systems
-4. Introducing multiple machines (beginnings of a distributed system)
+4. Introducing multiple machines 
 5. Interconnection between machines
 6. Communication methods in distributed systems
 7. Problems arising from relying on the internet
@@ -17,13 +17,13 @@ The internet has been around for quite sometime now, and many people have forgot
 
 As mentioned, the process is going to follow a bottom-up approach, starting from the simplest form which is running a single machine and evolving it into a complex system. 
 
-## 2. Single machine 
+## 2. Single machine architecture
 In contrast to what many people think belief nowadays, in the world of microservices and service-oriented architecture a system composed by only one machine offers many benefits, as well as limitations. 
 
 ### Advantages of running a single machine
 a. Simplicity. Makes up for an easier setup and management, reducing the effort for configuring, maintaing and troubleshooting a single machine. 
 
-b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components of a single machine. Although in the other hand, consumer electronics have become very affordable and have a decent amount of power. This made distributed computing more affordable.
+b. Cost effectiveness. Generally speaking it is indeed cheaper to buy the components for a single machine. Although on the other hand, consumer electronics have become very affordable and powerful. This made distributed computing more affordable as adding more machines not always incured huge bills.
 
 c. Data consistency. Data has become the most pivotal piece, everything evolves around the data. Handling data in a single machine is is far more simple than having it distributed in different machines. If we were to simplify this even further and assume there was only one thread, data would always remain consistent and events will always be causal. On the other hand it is easy to foresee this piece to become a huge bottleneck.   
 
@@ -51,22 +51,21 @@ a. Fault tolerance, redundancy and single point of failure. In the single machin
 
 b. Scalability. By distributing computation and data across different machines it is possible to handle greater workloads than it would ever be in a single machine. Specially in big data where large amounts of data must be processed and analyzed. To overcome peaks of computation or to scale up as the user base grows one can scale the system horizontally, that is, by adding more machines to overcome the demand. Of course this will increase the complexity of the system.
 
-There are three main properties a healthy distributed system should have: reliability, scalability and maintainability.
+## 4. Introducing multiple machines 
+There are initial challenges in coordinating and managing resources. While introducing multiple machines can bring significant benefits, it also presents new challenges. Coordinating and managing resources across multiple machines can be complex, as developers and system admins must deal with issues such as data consistency, load balancing, and fault tolerance. Additionally, networking between machines introduces latency, which can affect application performance. These challenges have a huge repercussion in planning, design, and implementation to ensure that the distributed system operates effectively and efficiently.
+
+In order to measure the design and implementation of a distributed system there are three main properties a successful system should provide: reliability, scalability and maintainability.
 
 - Reliability: the system should keep working, at a desired level of performance, even in the presence of faults and errors.
 - Scalability: it should be possible to scale alonside with the system growth in data, traffic or complexity 
 - Maintainability: the ability to repair, upgrade or modify the system while it is running without causing downtime (or causing as little as possible)
 
-## 4. Introducing multiple machines (beginnings of a distributed system)
-
-    a. Increased resources and capacity
-    b. Improved fault tolerance (redundancy)
-    c. Initial challenges in coordinating and managing resources
-
 ## 5. Interconnection between machines
-    a. Networking basics (LAN, WAN, Internet)
-    b. Network latency and bandwidth limitations
-    c. Data consistency and synchronization challenges
+The main an added complexity in the transition from a single machine to a distributed system is networking. 
+
+a. Networking basics (LAN, WAN, Internet)
+b. Network latency and bandwidth limitations
+c. Data consistency and synchronization challenges
 
 ## 6. Communication methods in distributed systems
     a. Synchronous communication (blocking, immediate response)
