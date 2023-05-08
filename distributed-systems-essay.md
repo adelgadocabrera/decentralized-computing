@@ -3,8 +3,8 @@
 Table of contents:
 1. Introduction
 2. Single machine 
-3. Introducing multiple machines (beginnings of a distributed system)
-4. Motivation for distributed fault-tolerant systems
+3. Motivation for distributed fault-tolerant systems
+4. Introducing multiple machines (beginnings of a distributed system)
 5. Interconnection between machines
 6. Communication methods in distributed systems
 7. Problems arising from relying on the internet
@@ -44,17 +44,24 @@ c. Fault tolerance concerns (single point of failure). By far the most important
 
 - Environmental issues (power outages, temperature, humidity). Despite hardware redundancy, a machine won't be able to survive a power outage, or even worse, earthquakes or any other unpredictable natural disasters. Temperature and humidity will also greatly affect components lifespan.
 
-## 3. Introducing multiple machines (beginnings of a distributed system)
+## 3. Motivation for distributed fault-tolerant systems
+As applications, traffic and specially data grows, the limitations of single machines become more pronounced. There is a need to transition into a system that can provide more resources, better fault tolerance and the ability to scale. We can address these challenges by adding multiple machines which should solve the main pain points of our previous system:
 
+a. Fault tolerance, redundancy and single point of failure. In the single machine setup, hardware or software failure will automatically lead to system downtime until the fault is resolved. By adding more machines we can solve to big problems when it comes to failures: the system remains operational even in the presence of a fault, and redundancy, data is no lost and remains available.
+
+b. Scalability. By distributing computation and data across different machines it is possible to handle greater workloads than it would ever be in a single machine. Specially in big data where large amounts of data must be processed and analyzed. To overcome peaks of computation or to scale up as the user base grows one can scale the system horizontally, that is, by adding more machines to overcome the demand. Of course this will increase the complexity of the system.
+
+There are three main properties a healthy distributed system should have: reliability, scalability and maintainability.
+
+- Reliability: the system should keep working, at a desired level of performance, even in the presence of faults and errors.
+- Scalability: it should be possible to scale alonside with the system growth in data, traffic or complexity 
+- Maintainability: the ability to repair, upgrade or modify the system while it is running without causing downtime (or causing as little as possible)
+
+## 4. Introducing multiple machines (beginnings of a distributed system)
 
     a. Increased resources and capacity
     b. Improved fault tolerance (redundancy)
     c. Initial challenges in coordinating and managing resources
-
-## 4. Motivation for distributed fault-tolerant systems
-    a. Addressing single point of failure
-    b. Providing redundancy and failover capabilities
-    c. Ensuring data durability and availability
 
 ## 5. Interconnection between machines
     a. Networking basics (LAN, WAN, Internet)
