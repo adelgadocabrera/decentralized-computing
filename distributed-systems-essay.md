@@ -1,16 +1,15 @@
 # Distributed Systems Essay
 
 Table of contents:
-- [1. Introduction](## 1. Introduction)
-- [2. Single machine](## 2. Single machine)
-- [3. Introducing multiple machines (beginnings of a distributed system)](## 3. Introducing multiple machines (beginnings of a distributed system))
-- [4. Motivation for distributed fault-tolerant systems](## 4. Motivation for distributed fault-tolerant systems)
-- [5. Interconnection between machines](## 5. Interconnection between machines)
-- [6. Communication methods in distributed systems](## 6. Communication methods in distributed systems)
-- [7. Problems arising from relying on the internet](## 7. Problems arising from relying on the internet)
-- [8. Distributed systems concepts and challenges](## 8. Distributed systems concepts and challenges)
-- [9. Dealing with failures in distributed systems](## 9. Dealing with failures in distributed systems)
-
+1. Introduction
+2. Single machine 
+3. Introducing multiple machines (beginnings of a distributed system)
+4. Motivation for distributed fault-tolerant systems
+5. Interconnection between machines
+6. Communication methods in distributed systems
+7. Problems arising from relying on the internet
+8. Distributed systems concepts and challenges
+9. Dealing with failures in distributed systems
 
 ## 1. Introduction 
 
