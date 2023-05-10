@@ -61,7 +61,7 @@ impl P2p {
                         let p2p_arc = Arc::new(RwLock::new(p2p));
                         let p2p_clone = p2p_arc.clone();
                         let event_receiver: Receiver<RustchainEvent> =
-                            event_bus.write().await.subscribe().await;
+                        event_bus.write().await.subscribe().await;
                         spawn(
                             async move { P2p::listen_for_events(p2p_clone, event_receiver).await },
                         );
