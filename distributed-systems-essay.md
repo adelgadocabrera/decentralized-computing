@@ -76,9 +76,9 @@ First thing that will come to your mind are TCP (Transmission Control Protocol) 
 
 Lets look at the following example of sync and async replication:
 
-![Sync/Async replication](/media/sync-async-comms.png)
+![Sync/Async replication](/media/sync-async.png)
 
-- Synchronous communication (blocking, immediate response). Simplifies the code structure by following linear execution flow. When a sender makes a request, it waits for the receiver to respond before proceeding 
+- Synchronous communication (blocking, immediate response). Simplifies the code structure by following linear execution flow. When a sender makes a request, it waits for the receiver to respond before proceeding. This would be the case of the data being replicated from the Leader to Follower 1. 
 
 - Asynchronous communication (non-blocking, delayed response).
 
