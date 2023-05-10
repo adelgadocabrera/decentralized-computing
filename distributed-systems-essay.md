@@ -113,8 +113,6 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 - Fault recovery and failover mechanisms
 - Data backups and disaster recovery planning
 
-## 
-
 --- 
 
 Why is it hard to build distributed systems? 
