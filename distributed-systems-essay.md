@@ -1,4 +1,5 @@
 # Distributed Systems Essay
+> _A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable - Leslie Lamport_
 
 Table of contents:
 1. Introduction
@@ -127,8 +128,6 @@ _Source Designing Data Intensive Applications by Martin Kleppmann._
 - Concurrency issues: conflicts may occur during concurrent reads and writes leading to dirty reads, dirty writes and read skew
 - Network partitions: communication between nodes may be disrupted or compromised, causing partitions that affect availability and consistency. 
 - Cascading failures: failures on one part of the system can cause failures in another, potentially leading to system outages 
-
-> _A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable - Leslie Lamport_
 
 // Trying to go from more broad and abstract concepts to more specific 
 
