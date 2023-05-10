@@ -63,16 +63,32 @@ In order to measure the design and implementation of a distributed system there 
 - Maintainability: the ability to repair, upgrade or modify the system while it is running without causing downtime (or causing as little as possible)
 
 ## 5. Interconnection between machines
-The main an added complexity in the transition from a single machine to a distributed system is networking. 
+The transition from a single machine to a distributed system introduces several complexities, with networking being a critical aspect. Establishing reliable and efficient communication between machines in a distributed system is essential for its overall performance and functionality. 
 
-- Networking basics (LAN, WAN, Internet)
-- Network latency and bandwidth limitations
-- Data consistency and synchronization challenges
+### Networking basics (LAN, WAN, Internet)
+To facilitate communication between machines in a distributed system, they must be interconnected through a network. There are various types of networks to consider:
+
+- Local Area Network (LAN): A LAN connects computers within a limited area, such as an office building or a small campus. LANs enable high-speed communication and data transfer within the confined space, allowing machines within the network to work together efficiently.
+
+- Wide Area Network (WAN): A WAN spans larger geographical areas, connecting machines across cities, countries, or even continents. WANs typically have lower data transfer rates compared to LANs, and they may rely on leased lines or public infrastructure like the Internet.
+
+- Internet: The Internet is a global network that connects countless devices worldwide. Distributed systems can leverage the Internet to enable communication and data exchange between machines in different locations, expanding their reach and capacity.
+
+### Network latency and bandwidth limitations
+Distributed systems rely heavily on the performance of the network connecting their machines. There are two key factors, latency and bandwidth:
+
+- Network latency. Refers to the time it takes for data to travel from one machine to another. High latency can (and will most likely) negatively impact the performance of a distributed system by increasing response times and slowing down data transfer. 
+
+- Bandwidth limitations. Represents the maximum data transfer rate of a network. Limited bandwidth will limit the amount of data that can be transferred in a system at a given time, leading to bottlenecks and congestion.
+
+### Communication protocols and data formats
+Machines will have to speak, so to say, the same language if they want to understand each other. Distributed systems rely on communication protocols and data formats to exchange information. Common communication protocols include HTTP, gRPC and data formats such as JSON, XML, or Protocol Buffers define the structure of messages exchanged between machines. Choosing appropriate communication protocols and data formats can significantly impact the efficiency, reliability, and maintainability of a distributed system.
+
 
 ## 6. Communication methods in distributed systems
-In order to function effectively in distributed systems information has to be exchanged and actions have to be properly coordinated. There are different communication methods each with its own set of trade-offs but it all comes down to two groups, synchronous and asynchronous communication.
+There are different communication methods, each with its own set of trade-offs, but it all comes down to two groups, synchronous and asynchronous communication.
 
-First thing that will come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether teh sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
+First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether teh sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
 
 ![Sync/Async replication](/media/async-sync.png)
 
