@@ -47,7 +47,7 @@ In contrast to what many people think belief nowadays, in the world of microserv
 ## 3. Motivation for distributed fault-tolerant systems
 As applications, traffic and specially data grows, the limitations of single machines become more pronounced. There is a need to transition into a system that can provide more resources, better fault tolerance and the ability to scale. We can address these challenges by adding multiple machines which should solve the main pain points of our previous system:
 
-- Fault tolerance, redundancy and single point of failure. In the single machine system, hardware or software failure will automatically lead to system downtime until the fault is resolved. By adding more machines we can solve two big problems when it comes to failures: the system remains operational even in the presence of a fault, and redundancy, data is no lost and remains available.
+- Fault tolerance, redundancy and single point of failure. In the single machine system, hardware or software failure will automatically lead to system downtime until the fault is resolved. By adding more machines we can solve two painful problems when it comes to failures: the system remains operational even in the presence of a fault, and redundancy, data is not lost and remains available.
 
 - Scalability. By distributing computation and data across different machines it is possible to handle greater workloads than it would ever be in a single machine. Specially in big data where large amounts of data must be processed and analyzed. To overcome peaks of computation or to scale up as the user base grows one can scale the system horizontally, that is, by adding more machines to overcome the demand. Of course this will increase the complexity of the system.
 
