@@ -99,18 +99,18 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 - Asynchronous communication (non-blocking, delayed response). Sender makes the request but does not wait for a repsonse. The sender can work on other tasks while the receiver processes the request at its own pace, ultimately responding when ready. This non-blocking approach leads to better resource utilization and improved system performance, as machines are not left idle while waiting for responses. Nonetheless, it introduces more complexities in managing and coordinating tasks. Very popular solution is an event-driven programming to manage execution flow and coordinate tasks effectively - which can make the code more challenging.
 
 ## 7. Problems arising from relying on the internet
-a. Network partitions, failures and congestion
-b. Security concerns (authentication, authorization, encryption)
+- Network partitions, failures and congestion
+- Security concerns (authentication, authorization, encryption)
 
 ## 8. Distributed systems concepts and challenges
-a. Consistency models (eventual consistency, strong consistency)
-b. Replication strategies (active/passive, active/active)
-c. Load balancing and resource allocation
+- Consistency models (eventual consistency, strong consistency)
+- Replication strategies (active/passive, active/active)
+- Load balancing and resource allocation
 
 ## 9. Dealing with failures in distributed systems
-a. Fault detection and monitoring
-b. Fault recovery and failover mechanisms
-c. Data backups and disaster recovery planning
+- Fault detection and monitoring
+- Fault recovery and failover mechanisms
+- Data backups and disaster recovery planning
 
 ## 
 
