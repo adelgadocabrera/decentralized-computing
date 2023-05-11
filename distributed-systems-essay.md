@@ -105,7 +105,7 @@ Some of the problems that can arise from relying on the internet include:
 
 All of these issues can have a significant impact on the performance and functionality of distributed systems, nonetheless, it is sometimes hard to design a system taking all possible factors into account. Therefore, when building a system it is important to identify what problems your system capable of tackling and equally important to be aware of what scenarios it is vulnerable to, or simply can't handle. 
 
-In addition to these network-related issues, there are also security concerns to consider. In a distributed system, it's essential to ensure that communication between nodes is secure and that proper authentication and authorization mechanisms are in place to prevent unauthorized access. Encryption is also important to ensure that sensitive data is protected from prying eyes.
+In addition to these network-related issues, there are also security concerns to consider. In a distributed system, it's essential to ensure that communication between nodes is secure and that proper authentication and authorization mechanisms are in place to prevent unauthorized access. Encryption is also important to ensure that sensitive data is protected from eavesdroppers and man-in-the-middle attacks.
 
 ## 7. Communication methods in distributed systems
 There are different communication methods, each with its own set of trade-offs, but it all comes down to two groups, synchronous and asynchronous communication.
@@ -122,8 +122,9 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 
 
 ## 8. Distributed systems concepts and challenges
+- CAP theorem (modelling distributed systems)
 - Consistency models (eventual consistency, strong consistency)
-- Replication strategies (active/passive, active/active)
+- Replication strategies (leader, multi-leader, leader-less replication models)
 - Load balancing and resource allocation
 
 ## 9. Dealing with failures in distributed systems
@@ -132,6 +133,8 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 - Data backups and disaster recovery planning
 
 --- 
+
+## Drafts
 
 Why is it hard to build distributed systems? 
 _Source Designing Data Intensive Applications by Martin Kleppmann._
