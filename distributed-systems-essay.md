@@ -7,8 +7,8 @@ Table of contents:
 3. Motivation for distributed fault-tolerant systems
 4. Introducing multiple machines 
 5. Interconnection between machines
-6. Communication methods in distributed systems
-7. Problems arising from relying on the internet
+6. Problems arising from relying on the internet
+7. Communication methods in distributed systems
 8. Distributed systems concepts and challenges
 9. Dealing with failures in distributed systems
 
@@ -86,7 +86,28 @@ Distributed systems rely heavily on the performance of the network connecting th
 Machines will have to speak, so to say, the same language if they want to understand each other. Distributed systems rely on communication protocols and data formats to exchange information. Common communication protocols include HTTP, gRPC and data formats such as JSON, XML, or Protocol Buffers define the structure of messages exchanged between machines. Choosing appropriate communication protocols and data formats can significantly impact the efficiency, reliability, and maintainability of a distributed system.
 
 
-## 6. Communication methods in distributed systems
+## 6. Problems arising from relying on the internet
+The internet is often taken for granted as a reliable channel of communication between machines. However, the reality is that the internet is far from a perfect system, and it can be prone to various issues that can negatively impact the performance and functionality of distributed systems.
+
+Some of the problems that can arise from relying on the internet include:
+
+- Unreliable networks: Networks can experience latency, drop connections, or packet loss, causing communication problems between nodes. This can result in delayed or lost messages, leading to coordination issues between nodes.
+
+- Message delays: Messages may be delayed or arrive out of order, causing coordination problems between nodes. This is especially problematic in distributed systems that require strict ordering of messages.
+
+- Unreliable (real) clocks: Clock synchronization is difficult, and nodes may have slightly different clocks, leading to a skewed notion of time. This makes it unreliable to determine causality between events, leading to further coordination issues.
+
+- Node failures: Software and/or hardware issues can cause node failures, which affects the availability and fault tolerance of the system. Nodes are also exposed to malicious attacks, which can further compromise the security and integrity of the system.
+
+- Network partitions: Communication between nodes may be disrupted or compromised, causing partitions that affect the availability and consistency of the system.
+
+- Cascading failures: Failures on one part of the system can cause failures in another, potentially leading to system outages.
+
+All of these issues can have a significant impact on the performance and functionality of distributed systems, nonetheless, it is sometimes hard to design a system taking all possible factors into account. Therefore, when building a system it is important to identify what problems your system capable of tackling and equally important to be aware of what scenarios it is vulnerable to, or simply can't handle. 
+
+In addition to these network-related issues, there are also security concerns to consider. In a distributed system, it's essential to ensure that communication between nodes is secure and that proper authentication and authorization mechanisms are in place to prevent unauthorized access. Encryption is also important to ensure that sensitive data is protected from prying eyes.
+
+## 7. Communication methods in distributed systems
 There are different communication methods, each with its own set of trade-offs, but it all comes down to two groups, synchronous and asynchronous communication.
 
 First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether teh sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
@@ -99,9 +120,6 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 
 - Asynchronous communication (non-blocking, delayed response). Sender makes the request but does not wait for a repsonse. The sender can work on other tasks while the receiver processes the request at its own pace, ultimately responding when ready. This non-blocking approach leads to better resource utilization and improved system performance, as machines are not left idle while waiting for responses. Nonetheless, it introduces more complexities in managing and coordinating tasks. Very popular solution is an event-driven programming to manage execution flow and coordinate tasks effectively - which can make the code more challenging.
 
-## 7. Problems arising from relying on the internet
-- Network partitions, failures and congestion
-- Security concerns (authentication, authorization, encryption)
 
 ## 8. Distributed systems concepts and challenges
 - Consistency models (eventual consistency, strong consistency)
