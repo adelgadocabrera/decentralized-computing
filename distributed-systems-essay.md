@@ -10,7 +10,8 @@ Table of contents:
 6. Problems arising from relying on the internet
 7. Communication methods in distributed systems
 8. Distributed systems concepts and challenges
-9. Dealing with failures in distributed systems
+9. Transactions 
+10. Dealing with failures in distributed systems
 
 ## 1. Introduction 
 
@@ -118,16 +119,22 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 
 - Synchronous communication (blocking, immediate response). Simplifies the code structure by following linear execution flow. When a sender makes a request, it waits for the receiver to respond before proceeding. As you can see, a long delay in processing the request from Service 1 to 2 (due to slowness in Service 2) will directly affect the performance or response time to user John Doe. In the worst case scenario, if there is a network fault or the machine running Service 2 crashes it will block the user's request indefinitely. Sometimes you may need this service to be synchronous but can become very dangerous when relying on multiple services or depending on chained services.
 
-- Asynchronous communication (non-blocking, delayed response). Sender makes the request but does not wait for a repsonse. The sender can work on other tasks while the receiver processes the request at its own pace, ultimately responding when ready. This non-blocking approach leads to better resource utilization and improved system performance, as machines are not left idle while waiting for responses. Nonetheless, it introduces more complexities in managing and coordinating tasks. Very popular solution is an event-driven programming to manage execution flow and coordinate tasks effectively - which can make the code more challenging.
+- Asynchronous communication (non-blocking, delayed response). Sender makes the request but does not wait for a response. The sender can work on other tasks while the receiver processes the request at its own pace, ultimately responding when ready. This non-blocking approach leads to better resource utilization and improved system performance, as machines are not left idle while waiting for responses. Nonetheless, it introduces more complexities in managing and coordinating tasks. Very popular solution is an event-driven programming to manage execution flow and coordinate tasks effectively - which can make the code more challenging.
 
 
 ## 8. Distributed systems concepts and challenges
+To reason about 
+
 - CAP theorem (modelling distributed systems)
 - Consistency models (eventual consistency, strong consistency)
 - Replication strategies (leader, multi-leader, leader-less replication models)
 - Load balancing and resource allocation
 
-## 9. Dealing with failures in distributed systems
+## 9. Transactions 
+- Properties of transactions (ACID)
+- Common problems in transactions (dirty reads, dirty writes, lost update problem, read skew, write skew, phantoms)
+
+## 10. Dealing with failures in distributed systems
 - Fault detection and monitoring
 - Fault recovery and failover mechanisms
 - Data backups and disaster recovery planning
