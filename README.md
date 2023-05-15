@@ -5,7 +5,6 @@
 - 📂 **merkletree/** implementation of a merkle tree in Golang. Go to [readme](/merkletree/README.md) 
 - 📂 **rustchain/** implementation of a blockchain using Rust. Go to [readme](/rustchain/README.md)
 - 📂 **web3/** drafts of web3 projects
-- 📂 **white_papers/** summaries of white papers 
     - 📄 [avatars-draft.md](/web3/avatars-draft.md)
     - 📄 [ticketing-draft.md](/web3/ticketing-draft.md)
 - 📂 **white_papers/** summaries of white papers 
