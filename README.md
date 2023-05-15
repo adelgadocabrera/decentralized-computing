@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - 📂 **media/** storage of pictures used in markdown files in the repository
-- 📂 **merkletree/** implementation of a merkle tree in Golang 
+- 📂 **merkletree/** implementation of a merkle tree in Golang. Go to [readme](/merkletree/README.md) 
 - 📂 **rustchain/** implementation of a blockchain using Rust. Go to [readme](/rustchain/README.md)
 - 📂 **web3/** drafts of web3 projects
 - 📂 **white_papers/** summaries of white papers 
