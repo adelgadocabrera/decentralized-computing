@@ -8,7 +8,7 @@
 - **white_papers/** summaries of white papers 
 - **distributed-systems-essay.md** essay describing the evolution from single machine to distributed systems 
 
-## Figures 
+## Some figures from the repo 
 
 ### rustchain 
 ![rustchain design](/media/rustchain.png)
