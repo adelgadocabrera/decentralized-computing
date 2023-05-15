@@ -1,4 +1,4 @@
-# Blockchain 
+# Blockchain ⚠️ Under construction ⚠️
 
 Blockchain is a distributed data structure with special properties, such as tamper-resistance. Most recently it gained interests worldwide as a backbone of cryptocurrency. This project covers public-key cryptography, one-way hash functions, Merkle tree, proof-of-work, proof-of-stake, Byzantine-fault tolerance and consensus algorithms.
 
