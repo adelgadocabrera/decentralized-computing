@@ -16,6 +16,6 @@
 ### merkletree
 ![merkletree](/media/merkle-tree.png)
 
-### chord 
+### distributed hash tables 
 ![dht-1](/media/dht-1.png)
 ![dht-2](/media/dht-2.png)
