@@ -170,6 +170,9 @@ Replication strategies are essential in distributed systems to achieve fault tol
     - Hybrid replication combines multiple replication strategies to leverage the advantages of different approaches based on the specific needs of the application or data. For example, a system might use leader-based replication within a data center for low-latency writes and employ multi-leader replication across multiple data centers for geo-distribution and fault tolerance.
     - Hybrid replication allows system designers to tailor the replication strategy to the specific requirements of their application, optimizing for factors such as consistency, availability, latency, and scalability.
 
+Example of hybrid replication. Each data center has a leader accepting writes. Writes are propagated to other data centers and replicated within the same data center using sync and async communication.
+![Hybrid replication](/media/replication.png)
+
 ## 9. Transactions 
 Transactions are a fundamental unit of work that consists of a set of operations that should be executed atomically and consistently. They provide a way to group multiple operations into a single logical unit, ensuring that either all operations within the transaction are successfully completed, or none of them take effect at all. By providing this atomicity property, transactions help to preserve data integrity and prevent inconsistent or partial updates.
 
