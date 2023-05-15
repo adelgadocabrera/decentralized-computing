@@ -104,7 +104,7 @@ Some of the problems that can arise from relying on the internet include:
 
 - Cascading failures: Failures on one part of the system can cause failures in another, potentially leading to system outages.
 
-All of these issues can have a significant impact on the performance and functionality of distributed systems, nonetheless, it is sometimes hard to design a system taking all possible factors into account. Therefore, when building a system it is important to identify what problems your system capable of tackling and equally important to be aware of what scenarios it is vulnerable to, or simply can't handle. 
+All of these issues can have a significant impact on the performance and functionality of distributed systems, nonetheless, it is sometimes hard to design a system taking all possible factors into account. Therefore, when building a system it is important to identify what problems your system is capable of tackling and equally important to be aware of what scenarios it is vulnerable to, or simply can't handle. 
 
 In addition to these network-related issues, there are also security concerns to consider. In a distributed system, it's essential to ensure that communication between nodes is secure and that proper authentication and authorization mechanisms are in place to prevent unauthorized access. Encryption is also important to ensure that sensitive data is protected from eavesdroppers and man-in-the-middle attacks.
 
@@ -136,7 +136,7 @@ The CAP theorem, also known as Brewer's theorem, is a fundamental concept in dis
 
 According to the CAP theorem, a distributed system can only guarantee two out of the three properties: consistency, availability, and partition tolerance. This means that in the presence of network partitions, system designers must choose whether to prioritize consistency (CP systems) or availability (AP systems).
 
-### Consistency models (eventual consistency, strong consistency)
+### Consistency models 
 Consistency models define how data is synchronized and shared among distributed components in a distributed system. They provide guidelines for how updates and reads are performed and how the system ensures data integrity. Different consistency models offer varying levels of guarantees regarding the visibility of updates and the ordering of operations. Let's take a look at some consistency models.
 
 - Eventual Consistency: Eventual consistency allows replicas to become consistent over time without enforcing strict ordering or immediate visibility of updates. It permits temporary inconsistencies but guarantees that all replicas will _eventually_ converge to the same state. Systems employing eventual consistency prioritize availability and low latency, making it suitable for applications such as content delivery networks (CDNs), distributed databases, and collaborative editing systems.
@@ -149,13 +149,64 @@ Consistency models define how data is synchronized and shared among distributed 
 
 - Read-your-Writes Consistency: Read-your-writes consistency ensures that any read operation performed by a client will always return the result of its own preceding write operation. It guarantees that a client observes its own writes immediately. Read-your-writes consistency is valuable in applications where immediate visibility of updates is necessary for correctness, such as social media feeds or real-time collaborative editing. One caveat though. How do you ensure read-your-writes if you try to read your own post from a different device? In this case it may appear inconsistent. 
 
-### Replication strategies (leader, multi-leader, leader-less replication models)
+### Replication strategies 
+Replication strategies are essential in distributed systems to achieve fault tolerance, improve availability, and enhance performance. Replication involves maintaining multiple copies of data across distributed components. Various replication strategies exist, each offering different trade-offs in terms of consistency, latency, and system complexity. Let's explore some common replication strategies:
 
-### Load balancing and resource allocation
+- Leader-based Replication
+    - In leader-based replication, one replica, known as the leader or primary replica, is designated as the primary copy for all write operations. When a client wants to write data, it sends the write request to the leader replica, which processes and propagates the update to the other replicas, known as followers or secondary replicas. Read operations can be performed on either the leader or the followers, increasing (read) availability.
+    - Advantages of leader-based replication include low write latency, as write operations only need to be processed by the leader, and strong consistency guarantees as long as clients always read from the leader. However, if the leader fails, a new leader must be elected, and there might be a delay during which the system is unavailable for writes. Additionally, the leader can become a bottleneck for write-intensive workloads.
+
+- Multi-leader Replication
+    - In multi-leader replication, multiple replicas are designated as leaders, each responsible for handling write operations for a specific subset of data. Clients can write to any of the leaders, and updates are asynchronously propagated to other replicas. Read operations can be performed on any replica, but conflicts may arise due to concurrent writes on different leaders.
+    - Multi-leader replication provides high availability, as write operations can be processed by any leader replica, reducing write latency and enabling better scalability. However, managing conflicts and achieving consistency across leaders becomes a challenge. Conflict resolution mechanisms and techniques such as conflict detection, resolution policies, or application-level conflict handling must be employed to maintain data integrity.
+
+- Leader-less Replication 
+    - In leader-less replication, also known as distributed consistency models, there is no designated leader or primary replica. Instead, all replicas participate in the coordination and decision-making process. Write operations are typically performed on multiple replicas, and the system employs consensus protocols or voting mechanisms to ensure that updates are applied consistently across replicas. Read operations can be performed on any replica.
+    - Leader-less replication provides high availability, fault tolerance, and load balancing across replicas. It eliminates the single point of failure and bottleneck associated with a leader-based approach. However, achieving consensus among replicas can introduce higher write latency, increased communication overhead, and potential conflicts that need to be resolved.
+
+- Hybrid Replication
+    - Hybrid replication combines multiple replication strategies to leverage the advantages of different approaches based on the specific needs of the application or data. For example, a system might use leader-based replication within a data center for low-latency writes and employ multi-leader replication across multiple data centers for geo-distribution and fault tolerance.
+    - Hybrid replication allows system designers to tailor the replication strategy to the specific requirements of their application, optimizing for factors such as consistency, availability, latency, and scalability.
 
 ## 9. Transactions 
-- Properties of transactions (ACID)
-- Common problems in transactions (dirty reads, dirty writes, lost update problem, read skew, write skew, phantoms)
+Transactions are a fundamental unit of work that consists of a set of operations that should be executed atomically and consistently. They provide a way to group multiple operations into a single logical unit, ensuring that either all operations within the transaction are successfully completed, or none of them take effect at all. By providing this atomicity property, transactions help to preserve data integrity and prevent inconsistent or partial updates.
+
+### Properties of transactions (ACID)
+ACID is an acronym that stands for Atomicity, Consistency, Isolation, and Durability.
+
+- Atomicity: Atomicity ensures that a transaction is treated as an indivisible unit of work. It guarantees that either all operations within a transaction are successfully completed and committed, or none of them take effect at all. If any part of a transaction fails, the entire transaction is rolled back, and the system remains in its original state. Atomicity guarantees that transactions are either fully completed or fully undone, preventing partial updates and preserving data integrity. An alternative name could be _abortability_ as atomicity could be confused for atomicity in multi-threading.
+
+- Consistency: Consistency ensures that a transaction brings the system from one consistent state to another. It defines the integrity constraints and rules that the data must adhere to. Transactions must follow predefined consistency rules, ensuring that the system's data remains valid and satisfies all constraints, business rules, and integrity requirements. Consistency guarantees that only valid and permissible changes are made to the data, preserving its overall correctness. These rules are the so called business rules and thus consistency is not really a property of a transaction from the point of view of a database's responsibility.
+
+- Isolation: Isolation guarantees that each transaction is executed in isolation from other concurrently executing transactions. It ensures that the intermediate states of a transaction are not visible to other transactions until it is committed. Isolation prevents interference, conflicts, and inconsistencies that can arise when multiple transactions concurrently access and modify the same data. It provides the illusion that transactions are executed sequentially, even though they may be executing concurrently.
+
+- Durability: Durability ensures that once a transaction is committed, its effects are permanently recorded and will persist even in the event of system failures, crashes, or power outages. Committed data is stored in a durable and permanent manner, typically in non-volatile storage, such as disk or flash memory. Durability guarantees that data changes made by committed transactions are persistent and can be recovered in the face of failures.
+
+### Common problems in transactions 
+Here are common problems that can occur in transactions:
+
+- Dirty Reads: A dirty read occurs when one transaction reads data that has been modified by another transaction that has not yet committed. This can lead to inconsistent or incorrect data being read. 
+
+- Dirty Writes: Dirty writes happen when one transaction overwrites data that has been modified by another transaction that has not yet committed. This can result in data loss or inconsistency.
+
+- Lost Updates: Lost updates occur when two transactions concurrently read the same data and then update it independently, resulting in one update being lost, and the final state not reflecting both changes.
+
+- Read Skew: Read skew refers to a situation where a transaction reads data twice but obtains different results due to concurrent updates by other transactions. This can lead to inconsistencies when making decisions based on the read data.
+
+- Write Skew: Write skew occurs when two transactions read some overlapping data, make independent updates based on that data, and commit their changes concurrently. This can lead to conflicts and inconsistent states.
+
+- Phantoms: Phantoms refer to situations where a transaction performs a query multiple times, and the results differ due to concurrent insertions or deletions by other transactions. This can lead to unexpected and inconsistent query results.
+
+### Isolation levels 
+There are several commonly used isolation levels that define the degree of concurrency and consistency in executing transactions. Each isolation level offers different guarantees and trade-offs regarding data visibility, concurrency control, and isolation from other concurrent transactions.
+
+- Read Uncommitted is the lowest isolation level, where transactions can read data that has been modified but not yet committed by other concurrent transactions. This level provides the least consistency and exposes transactions to phenomena like _dirty reads_, _dirty writes_, and _non-repeatable reads_. It offers high concurrency but sacrifices data integrity.
+
+- Read Committed guarantees that a transaction will only read data that has been committed by other transactions. It avoids dirty reads but allows non-repeatable reads, as data can be modified by concurrent transactions during the course of a transaction. Read Committed provides a higher level of consistency compared to Read Uncommitted.
+
+- Repeatable Read ensures that within a transaction, the same query will always return the same set of rows, even if other transactions modify the data concurrently. It prevents non-repeatable reads by acquiring shared locks on read data, preventing other transactions from modifying it until the transaction completes. However, it still allows phantom reads, where new rows may be inserted by other transactions.
+
+- Serializable is the highest isolation level, providing the strongest consistency guarantees. It ensures that transactions execute as if they were executed one after another, in a serial manner. Serializable prevents all concurrency-related anomalies, including dirty reads, non-repeatable reads, and phantom reads. It achieves this by acquiring exclusive locks on read data, preventing other transactions from accessing or modifying it until the transaction completes. Serializable offers the strongest data integrity but can impact concurrency and scalability due to increased locking.
 
 ## 10. Dealing with failures in distributed systems
 - Fault detection and monitoring
