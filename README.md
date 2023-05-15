@@ -7,3 +7,15 @@
 - **web3/** drafts of web3 projects
 - **white_papers/** summaries of white papers 
 - **distributed-systems-essay.md** essay describing the evolution from single machine to distributed systems 
+
+## Figures 
+
+### rustchain 
+![rustchain design](/media/rustchain.png)
+
+### merkletree
+![merkletree](/media/merkle-tree.png)
+
+### chord 
+![dht-1](/media/dht-1.png)
+![dht-2](/media/dht-2.png)
