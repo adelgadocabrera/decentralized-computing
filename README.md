@@ -6,7 +6,7 @@
 - **rustchain/** implementation of a blockchain using Rust 
 - **web3/** drafts of web3 projects
 - **white_papers/** summaries of white papers 
-- **distributed-systems-essay.md** essay describing the evolution from single machine to distributed systems 
+- **[distributed-systems-essay.md](distributed-systems-essay.md)** essay describing the evolution from single machine to distributed systems 
 
 ## Some figures from the repo 
 
