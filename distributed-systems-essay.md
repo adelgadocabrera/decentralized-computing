@@ -216,16 +216,16 @@ There are several commonly used isolation levels that define the degree of concu
 ### Concurrency Control Mechanisms 
 Different isolation levels can be achieved through various concurrency control mechanisms and techniques. Each mechanism provides a different balance between data consistency and concurrency.
 
-- Serial Execution:
+- Serial Execution
     - Serial Execution guarantees the highest level of isolation and consistency by executing transactions sequentially, one after another. Serial execution ensures that there are no concurrency-related anomalies, but it severely limits concurrency and may lead to decreased performance.
     
-- Optimistic Concurrency Control:
+- Optimistic Concurrency Control
     - Optimistic Concurrency Control (OCC): OCC allows multiple transactions to proceed concurrently without acquiring locks. Each transaction performs its operations and validates them during the commit phase to ensure that no conflicts occurred. OCC offers high concurrency but may result in increased rollback rates if conflicts are detected during validation.
 
-- Multiversion Concurrency Control (MVCC):
+- Multiversion Concurrency Control (MVCC)
     - Snapshot Isolation: Snapshot Isolation allows each transaction to operate on a consistent snapshot of the database taken at the start of the transaction. It achieves a level of isolation similar to Repeatable Read. MVCC provides good concurrency by allowing read and write operations to proceed concurrently, but it can result in increased storage requirements due to maintaining multiple versions of data.
 
-- Timestamp-Based Concurrency Control:
+- Timestamp-Based Concurrency Control
     - Serializable Snapshot Isolation (SSI): SSI uses timestamps to order transactions and determine the visibility of data. It achieves Serializable isolation by preventing phenomena such as dirty reads, non-repeatable reads, and phantom reads. However, SSI may introduce transaction aborts and serialization anomalies in highly concurrent workloads.
 
 - Lock-Based Concurrency Control
