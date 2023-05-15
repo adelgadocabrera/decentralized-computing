@@ -123,7 +123,16 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 
 
 ## 8. Distributed systems concepts and challenges
-In this section, we will explore several fundamental concepts and challenges related to distributed systems. We will delve into the CAP theorem, which helps model the trade-offs between consistency, availability, and partition tolerance. Consistency models, such as eventual consistency and strong consistency, define how data is synchronized and shared among distributed components. We will also examine different replication strategies, including leader-based, multi-leader, and leader-less models, which determine how data is replicated across multiple machines.
+In this section, we will explore several fundamental concepts and challenges related to distributed systems. We will delve into the expected behavior of a distributed system, the CAP theorem, which helps model the trade-offs between consistency, availability, and partition tolerance. Consistency models, such as eventual consistency and strong consistency, define how data is synchronized and shared among distributed components. We will also examine different replication strategies, including leader-based, multi-leader, and leader-less models, which determine how data is replicated across multiple machines.
+
+### Liveness and safety
+Liveness and safety are two fundamental properties used to reason about the correctness and behavior of distributed systems.
+
+- Liveness: Liveness refers to the property that a system will eventually make progress and produce a desired outcome. It ensures that something good eventually happens in the system. In other words, liveness guarantees that a system will not get "stuck" or remain in an undesirable state indefinitely. Liveness properties are crucial to ensure that distributed systems continue to operate and progress towards their intended goals, even in the presence of failures or other challenges. For example:
+    - Every order placed by a customer is eventually processed and fulfilled, and every payment made by a customer is eventually confirmed.
+
+- Safety: Safety refers to the property that a system always maintains certain desired invariants or properties, regardless of its past or future behavior. It ensures that something bad never happens in the system. Safety properties express constraints on the system's behavior and specify what should never occur. For example:
+    - The system ensures that a customer cannot place an order without sufficient funds in their account, preventing invalid or unauthorized orders. Additionally, the system guarantees that a customer is charged only once for a given order, preventing duplicate payments.
 
 ### CAP theorem (modelling distributed systems)
 The CAP theorem, also known as Brewer's theorem, is a fundamental concept in distributed systems that helps in understanding the trade-offs between three desirable properties: consistency, availability, and partition tolerance. 
@@ -236,9 +245,31 @@ It's important to consider the trade-offs associated with each mechanism. Lock-b
 The choice of mechanism depends on the specific requirements of the application, the workload characteristics, and the desired balance between consistency and concurrency. It's essential to carefully evaluate the trade-offs and choose the most suitable mechanism to achieve the desired isolation level while ensuring optimal system performance.
 
 ## 10. Dealing with failures in distributed systems
-- Fault detection and monitoring
-- Fault recovery and failover mechanisms
-- Data backups and disaster recovery planning
+Fault tolerance is a key aspect of dealing with failures in distributed systems. It refers to the ability of a system to continue operating and providing its services in the presence of failures. Fault tolerance mechanisms aim to minimize the impact of failures, ensure system availability, and maintain the desired level of performance and functionality.
+
+Some strategies may include:
+
+- Redundancy: Redundancy involves creating duplicate components, data, or resources to provide backups. By maintaining redundant copies, the system can continue functioning even if some components fail. For example, using drives in RAID mode in case one of the drives dies. Redundancy enhances fault tolerance and allows for seamless failover when failures occur.
+
+- Replication: Replication is the process of creating multiple copies of data or system components across different nodes as we have seen before. Replication improves system availability and reliability by allowing requests to be processed by replicas if the primary node fails. It ensures liveness by enabling continuous operation and safety by preserving data integrity.
+
+- Failover: Failover refers to the process of transferring operations from a failed node to a backup component. When a failure is detected, the system automatically switches to an alternative node to continue processing requests. Failover mechanisms ensure continuity and minimize downtime by quickly recovering from failures.
+
+### Fault Detection and Monitoring
+Fault detection involves identifying abnormal behavior, errors, or failures in the system components. This can be achieved through various monitoring techniques, including:
+
+- Health Checks: Regularly monitoring the health and status of individual components or nodes in the system. This can involve checking metrics such as CPU usage, memory utilization, network connectivity, and response times.
+
+- Heartbeats and Ping Messages: Using heartbeat signals or periodic ping messages to check the availability and responsiveness of components. If a heartbeat or ping message is not received within a specified timeframe, it indicates a potential failure.
+
+- Distributed Tracing: Employing distributed tracing techniques to trace and monitor the flow of requests and responses across the distributed system. This can help identify performance bottlenecks, failures, or latency issues.
+
+- Log Analysis: Analyzing system logs to detect anomalies, errors, or patterns that indicate potential failures or issues in the system.
+
+### Consensus 
+Consensus is a fundamental mechanism used in distributed systems to achieve agreement among multiple nodes or processes, even in the presence of failures or network partitions. Consensus algorithms enable distributed nodes to work together to reach a common decision or state, ensuring that all nodes agree on the order of operations or the value of a particular data item.
+
+Consensus is crucial in distributed systems because it helps maintain system integrity, ensures data consistency, and allows for coordinated actions across multiple nodes.
 
 --- 
 
