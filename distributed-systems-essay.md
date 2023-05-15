@@ -2,7 +2,7 @@
 > _A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable - Leslie Lamport_
 
 Table of contents:
-1. Introduction
+1. <a href="#section-1">Introduction</a>
 2. Single machine architecture
 3. Motivation for distributed fault-tolerant systems
 4. Introducing multiple machines 
@@ -13,7 +13,7 @@ Table of contents:
 9. Transactions 
 10. Dealing with failures in distributed systems
 
-## 1. Introduction 
+## 1. <a id="section-1">Introduction</a>
 
 The internet has been around for quite sometime now, and many people have forgotten it wasn't once as reliable as it is now nor are the machines that participate in it. The proposal for this essay is not to cover all the topics related to distributed systems but to shed some light over the complexities that arise in distributed systems, learn why we build such complicated systems, and what problems arise in the process. 
 
