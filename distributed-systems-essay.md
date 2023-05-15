@@ -3,15 +3,15 @@
 
 Table of contents:
 1. <a href="#section-1">Introduction</a>
-2. Single machine architecture
-3. Motivation for distributed fault-tolerant systems
-4. Introducing multiple machines 
-5. Interconnection between machines
-6. Problems arising from relying on the internet
-7. Communication methods in distributed systems
-8. Distributed systems concepts and challenges
-9. Transactions 
-10. Dealing with failures in distributed systems
+2. <a href="#section-2">Single machine architecture</a>
+3. <a href="#section-3">Motivation for distributed fault-tolerant systems</a>
+4. <a href="#section-4">Introducing multiple machines</a>
+5. <a href="#section-5">Interconnection between machines</a>
+6. <a href="#section-6">Problems arising from relying on the internet</a>
+7. <a href="#section-7">Communication methods in distributed systems</a>
+8. <a href="#section-8">Distributed systems concepts and challenges</a>
+9. <a href="#section-9">Transactions</a>
+10. <a href="#section-10">Dealing with failures in distributed systems</a>
 
 ## 1. <a id="section-1">Introduction</a>
 
@@ -19,7 +19,7 @@ The internet has been around for quite sometime now, and many people have forgot
 
 As mentioned, the process is going to follow a bottom-up approach, starting from the simplest form which is running a single machine and evolving it into a complex system. 
 
-## 2. Single machine architecture
+## 2. <a id="section-2">Single machine architecture</a>
 In contrast to what many people think belief nowadays, in the world of microservices and service-oriented architecture a system composed by only one machine offers many benefits, as well as limitations. 
 
 ### Advantages of running a single machine
@@ -46,14 +46,14 @@ In contrast to what many people think belief nowadays, in the world of microserv
 
     - Environmental issues (power outages, temperature, humidity). Despite hardware redundancy, a machine won't be able to survive a power outage, or even worse, earthquakes or any other unpredictable natural disasters. Temperature and humidity will also greatly affect components lifespan.
 
-## 3. Motivation for distributed fault-tolerant systems
+## <a id="section-3">3. Motivation for distributed fault-tolerant systems</a>
 As applications, traffic and specially data grows, the limitations of single machines become more pronounced. There is a need to transition into a system that can provide more resources, better fault tolerance and the ability to scale. We can address these challenges by adding multiple machines which should solve the main pain points of our previous system:
 
 - Fault tolerance, redundancy and single point of failure. In the single machine system, hardware or software failure will automatically lead to system downtime until the fault is resolved. By adding more machines we can solve two painful problems when it comes to failures: the system remains operational even in the presence of a fault, and redundancy, data is not lost and remains available.
 
 - Scalability. By distributing computation and data across different machines it is possible to handle greater workloads than it would ever be in a single machine. Specially in big data where large amounts of data must be processed and analyzed. To overcome peaks of computation or to scale up as the user base grows one can scale the system horizontally, that is, by adding more machines to overcome the demand. Of course this will increase the complexity of the system.
 
-## 4. Introducing multiple machines 
+## 4. <a id="section-4">Introducing multiple machines</a>
 There are initial challenges in coordinating and managing resources. While introducing multiple machines can bring significant benefits, it also presents new challenges. Coordinating and managing resources across multiple machines can be complex, as developers and system admins must deal with issues such as data consistency, load balancing, and fault tolerance. Additionally, networking between machines introduces latency, which can affect application performance. These challenges have a huge repercussion in planning, design, and implementation to ensure that the distributed system operates effectively and efficiently.
 
 In order to measure the design and implementation of a distributed system there are three main properties a successful system should provide: reliability, scalability and maintainability.
@@ -64,7 +64,7 @@ In order to measure the design and implementation of a distributed system there 
 
 - Maintainability: the ability to repair, upgrade or modify the system while it is running without causing downtime (or causing as little as possible)
 
-## 5. Interconnection between machines
+## 5. <a id="section-5">Interconnection between machines</a>
 The transition from a single machine to a distributed system introduces several complexities, with networking being a critical aspect. Establishing reliable and efficient communication between machines in a distributed system is essential for its overall performance and functionality. 
 
 ### Networking basics (LAN, WAN, Internet)
@@ -87,7 +87,7 @@ Distributed systems rely heavily on the performance of the network connecting th
 Machines will have to speak, so to say, the same language if they want to understand each other. Distributed systems rely on communication protocols and data formats to exchange information. Common communication protocols include HTTP, gRPC and data formats such as JSON, XML, or Protocol Buffers define the structure of messages exchanged between machines. Choosing appropriate communication protocols and data formats can significantly impact the efficiency, reliability, and maintainability of a distributed system.
 
 
-## 6. Problems arising from relying on the internet
+## 6. <a id="section-6">Problems arising from relying on the internet</a>
 The internet is often taken for granted as a reliable channel of communication between machines. However, the reality is that the internet is far from a perfect system, and it can be prone to various issues that can negatively impact the performance and functionality of distributed systems.
 
 Some of the problems that can arise from relying on the internet include:
@@ -108,7 +108,7 @@ All of these issues can have a significant impact on the performance and functio
 
 In addition to these network-related issues, there are also security concerns to consider. In a distributed system, it's essential to ensure that communication between nodes is secure and that proper authentication and authorization mechanisms are in place to prevent unauthorized access. Encryption is also important to ensure that sensitive data is protected from eavesdroppers and man-in-the-middle attacks.
 
-## 7. Communication methods in distributed systems
+## 7. <a id="section-7>Communication methods in distributed systems</a>
 There are different communication methods, each with its own set of trade-offs, but it all comes down to two groups, synchronous and asynchronous communication.
 
 First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether teh sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
@@ -122,7 +122,7 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 - Asynchronous communication (non-blocking, delayed response). Sender makes the request but does not wait for a response. The sender can work on other tasks while the receiver processes the request at its own pace, ultimately responding when ready. This non-blocking approach leads to better resource utilization and improved system performance, as machines are not left idle while waiting for responses. Nonetheless, it introduces more complexities in managing and coordinating tasks. Very popular solution is an event-driven programming to manage execution flow and coordinate tasks effectively - which can make the code more challenging.
 
 
-## 8. Distributed systems concepts and challenges
+## 8. <a id="section-8">Distributed systems concepts and challenges</a>
 In this section, we will explore several fundamental concepts and challenges related to distributed systems. We will delve into the expected behavior of a distributed system, the CAP theorem, which helps model the trade-offs between consistency, availability, and partition tolerance. Consistency models, such as eventual consistency and strong consistency, define how data is synchronized and shared among distributed components. We will also examine different replication strategies, including leader-based, multi-leader, and leader-less models, which determine how data is replicated across multiple machines.
 
 ### Liveness and safety
@@ -182,7 +182,7 @@ Replication strategies are essential in distributed systems to achieve fault tol
 Example of hybrid replication. Each data center has a leader accepting writes. Writes are propagated to other data centers and replicated within the same data center using sync and async communication.
 ![Hybrid replication](/media/replication.png)
 
-## 9. Transactions 
+## 9. <a id="section-9">Transactions</a>
 Transactions are a fundamental unit of work that consists of a set of operations that should be executed atomically and consistently. They provide a way to group multiple operations into a single logical unit, ensuring that either all operations within the transaction are successfully completed, or none of them take effect at all. By providing this atomicity property, transactions help to preserve data integrity and prevent inconsistent or partial updates.
 
 ### Properties of transactions (ACID)
@@ -244,7 +244,7 @@ It's important to consider the trade-offs associated with each mechanism. Lock-b
 
 The choice of mechanism depends on the specific requirements of the application, the workload characteristics, and the desired balance between consistency and concurrency. It's essential to carefully evaluate the trade-offs and choose the most suitable mechanism to achieve the desired isolation level while ensuring optimal system performance.
 
-## 10. Dealing with failures in distributed systems
+## 10. <a id="section-10">Dealing with failures in distributed systems</a>
 Fault tolerance is a key aspect of dealing with failures in distributed systems. It refers to the ability of a system to continue operating and providing its services in the presence of failures. Fault tolerance mechanisms aim to minimize the impact of failures, ensure system availability, and maintain the desired level of performance and functionality.
 
 Some strategies may include:
