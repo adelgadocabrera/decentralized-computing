@@ -123,12 +123,35 @@ In the figure above user John Doe makes a request to Service 1. In order to proc
 
 
 ## 8. Distributed systems concepts and challenges
-To reason about 
+In this section, we will explore several fundamental concepts and challenges related to distributed systems. We will delve into the CAP theorem, which helps model the trade-offs between consistency, availability, and partition tolerance. Consistency models, such as eventual consistency and strong consistency, define how data is synchronized and shared among distributed components. We will also examine different replication strategies, including leader-based, multi-leader, and leader-less models, which determine how data is replicated across multiple machines.
 
-- CAP theorem (modelling distributed systems)
-- Consistency models (eventual consistency, strong consistency)
-- Replication strategies (leader, multi-leader, leader-less replication models)
-- Load balancing and resource allocation
+### CAP theorem (modelling distributed systems)
+The CAP theorem, also known as Brewer's theorem, is a fundamental concept in distributed systems that helps in understanding the trade-offs between three desirable properties: consistency, availability, and partition tolerance. 
+
+- Consistency: Consistency refers to the requirement that all nodes in a distributed system have the same view of the data at any given time. In other words, when a client reads data from one node, any subsequent reads from other nodes should return the same value or a consistent state. Strong consistency models, such as linearizability, provide globally consistent results. However, achieving strong consistency may come at the cost of availability or increased latency in the face of network partitions or failures.
+
+- Availability: Availability means that every request made to a non-failing node in the system should receive a response, regardless of the state of other nodes. In other words, the system should remain operational and continue to serve requests even in the presence of failures. High availability is crucial for systems that require continuous operation and cannot afford significant downtime. However, ensuring availability might lead to relaxed consistency guarantees or potential data staleness in certain scenarios.
+
+- Partition Tolerance: Partition tolerance refers to the system's ability to continue operating even when network partitions occur, causing nodes to be isolated and unable to communicate with each other. Network partitions can be caused by network failures or delays. Distributed systems must be able to tolerate and handle such partitions to ensure system availability and prevent a complete system failure. However, partition tolerance may require sacrificing either consistency or availability under certain conditions.
+
+According to the CAP theorem, a distributed system can only guarantee two out of the three properties: consistency, availability, and partition tolerance. This means that in the presence of network partitions, system designers must choose whether to prioritize consistency (CP systems) or availability (AP systems).
+
+### Consistency models (eventual consistency, strong consistency)
+Consistency models define how data is synchronized and shared among distributed components in a distributed system. They provide guidelines for how updates and reads are performed and how the system ensures data integrity. Different consistency models offer varying levels of guarantees regarding the visibility of updates and the ordering of operations. Let's take a look at some consistency models.
+
+- Eventual Consistency: Eventual consistency allows replicas to become consistent over time without enforcing strict ordering or immediate visibility of updates. It permits temporary inconsistencies but guarantees that all replicas will _eventually_ converge to the same state. Systems employing eventual consistency prioritize availability and low latency, making it suitable for applications such as content delivery networks (CDNs), distributed databases, and collaborative editing systems.
+
+- Strong Consistency (Linearizability): Strong consistency provides the _strongest_ level of consistency guarantees. It ensures that all operations appear to take effect atomically and in a globally agreed-upon order. In other words, operations appear as if they were executed in a single machine. With strong consistency, all replicas observe the same order of operations, and any read operation will return the most recent write or a concurrent write's result. Strong consistency is critical in applications that require strict data integrity, such as banking systems or e-commerce platforms.
+
+- Causal Consistency: Causal consistency guarantees that if one operation _causally_ depends on another, all replicas will observe them in the same order. It preserves causality between related operations while allowing some temporary inconsistencies in unrelated operations. Causal consistency is useful in systems that require preserving causal relationships between events, such as collaborative applications or event-driven architectures.
+
+- Session Consistency: Session consistency guarantees that all operations within a _single client session_ appear to take effect in the order specified by the client. It provides consistency within the context of a specific session while allowing temporary inconsistencies across sessions. Session consistency is suitable for scenarios where maintaining a consistent view within a session is important, such as in e-commerce shopping carts or online collaborative sessions.
+
+- Read-your-Writes Consistency: Read-your-writes consistency ensures that any read operation performed by a client will always return the result of its own preceding write operation. It guarantees that a client observes its own writes immediately. Read-your-writes consistency is valuable in applications where immediate visibility of updates is necessary for correctness, such as social media feeds or real-time collaborative editing. One caveat though. How do you ensure read-your-writes if you try to read your own post from a different device? In this case it may appear inconsistent. 
+
+### Replication strategies (leader, multi-leader, leader-less replication models)
+
+### Load balancing and resource allocation
 
 ## 9. Transactions 
 - Properties of transactions (ACID)
