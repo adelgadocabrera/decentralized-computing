@@ -214,12 +214,12 @@ There are several commonly used isolation levels that define the degree of concu
 - Serializable is the highest isolation level, providing the strongest consistency guarantees. It ensures that transactions execute as if they were executed one after another, in a serial manner. Serializable prevents all concurrency-related anomalies, including dirty reads, non-repeatable reads, and phantom reads. It achieves this by acquiring exclusive locks on read data, preventing other transactions from accessing or modifying it until the transaction completes. Serializable offers the strongest data integrity but can impact concurrency and scalability due to increased locking.
 
 ### Concurrency Control Mechanisms 
-Different isolation levels can be achieved through various concurrency control mechanisms and techniques. Each mechanism provides a different balance between data consistency and concurrency.
+Different isolation levels can be achieved through various concurrency control mechanisms and techniques. Each mechanism provides a different balance between data consistency and concurrency. 
 
 - Serial Execution
-    - Serial Execution guarantees the highest level of isolation and consistency by executing transactions sequentially, one after another. Serial execution ensures that there are no concurrency-related anomalies, but it severely limits concurrency and may lead to decreased performance.
+    - Serial Execution: Serial Execution guarantees the highest level of isolation and consistency by executing transactions sequentially, one after another. Serial execution ensures that there are no concurrency-related anomalies, but it severely limits concurrency and may lead to decreased performance.
     
-- Optimistic Concurrency Control
+- Optimistic Concurrency Control (OCC)
     - Optimistic Concurrency Control (OCC): OCC allows multiple transactions to proceed concurrently without acquiring locks. Each transaction performs its operations and validates them during the commit phase to ensure that no conflicts occurred. OCC offers high concurrency but may result in increased rollback rates if conflicts are detected during validation.
 
 - Multiversion Concurrency Control (MVCC)
