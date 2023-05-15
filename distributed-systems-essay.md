@@ -108,7 +108,7 @@ All of these issues can have a significant impact on the performance and functio
 
 In addition to these network-related issues, there are also security concerns to consider. In a distributed system, it's essential to ensure that communication between nodes is secure and that proper authentication and authorization mechanisms are in place to prevent unauthorized access. Encryption is also important to ensure that sensitive data is protected from eavesdroppers and man-in-the-middle attacks.
 
-## 7. <a id="section-7>Communication methods in distributed systems</a>
+## 7. <a id="section-7">Communication methods in distributed systems</a>
 There are different communication methods, each with its own set of trade-offs, but it all comes down to two groups, synchronous and asynchronous communication.
 
 First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether teh sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
