@@ -128,6 +128,8 @@ In this section, we will explore several fundamental concepts and challenges rel
 ### CAP theorem (modelling distributed systems)
 The CAP theorem, also known as Brewer's theorem, is a fundamental concept in distributed systems that helps in understanding the trade-offs between three desirable properties: consistency, availability, and partition tolerance. 
 
+![CAP Theorem](/media/cap.png)
+
 - Consistency: Consistency refers to the requirement that all nodes in a distributed system have the same view of the data at any given time. In other words, when a client reads data from one node, any subsequent reads from other nodes should return the same value or a consistent state. Strong consistency models, such as linearizability, provide globally consistent results. However, achieving strong consistency may come at the cost of availability or increased latency in the face of network partitions or failures.
 
 - Availability: Availability means that every request made to a non-failing node in the system should receive a response, regardless of the state of other nodes. In other words, the system should remain operational and continue to serve requests even in the presence of failures. High availability is crucial for systems that require continuous operation and cannot afford significant downtime. However, ensuring availability might lead to relaxed consistency guarantees or potential data staleness in certain scenarios.
