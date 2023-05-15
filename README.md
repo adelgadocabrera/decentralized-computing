@@ -6,6 +6,15 @@
 - 📂 **rustchain/** implementation of a blockchain using Rust. Go to [readme](/rustchain/README.md)
 - 📂 **web3/** drafts of web3 projects
 - 📂 **white_papers/** summaries of white papers 
+    - 📄 [avatars-draft.md](/web3/avatars-draft.md)
+    - 📄 [ticketing-draft.md](/web3/ticketing-draft.md)
+- 📂 **white_papers/** summaries of white papers 
+    - 📄 [chord.md](/white_papers/chord.md)
+    - 📄 [eigentrust.md](/white_papers/eigentrust.md)
+    - 📄 [google-spanner.md](/white_papers/google-spanner.md)
+    - 📄 [ipfs.md](/white_papers/ipfs.md)
+    - 📄 [kademlia.md](/white_papers/kademlia.md)
+    - 📄 [occult.md](/white_papers/occult.md)
 - 📄 **[distributed-systems-essay.md](distributed-systems-essay.md)** essay describing the evolution from single machine to distributed systems 
 
 ## Some figures from the repo 
