@@ -60,7 +60,7 @@ In order to measure the design and implementation of a distributed system there 
 
 - Reliability: the system should keep working, at a desired level of performance, even in the presence of faults and errors.
 
-- Scalability: it should be possible to scale alonside with the system growth in data, traffic or complexity 
+- Scalability: it should be possible to scale alongside with the system growth in data, traffic or complexity.
 
 - Maintainability: the ability to repair, upgrade or modify the system while it is running without causing downtime (or causing as little as possible)
 
@@ -111,7 +111,7 @@ In addition to these network-related issues, there are also security concerns to
 ## 7. <a id="section-7">Communication methods in distributed systems</a>
 There are different communication methods, each with its own set of trade-offs, but it all comes down to two groups, synchronous and asynchronous communication.
 
-First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether teh sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
+First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether the sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
 
 ![Sync/Async replication](/media/async-sync.png)
 
