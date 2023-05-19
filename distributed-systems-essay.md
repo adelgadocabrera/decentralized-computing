@@ -11,7 +11,8 @@ Table of contents:
 7. <a href="#section-7">Communication methods in distributed systems</a>
 8. <a href="#section-8">Distributed systems concepts and challenges</a>
 9. <a href="#section-9">Transactions</a>
-10. <a href="#section-10">Dealing with failures in distributed systems</a>
+9. <a href="#section-10">Consensus</a>
+10. <a href="#section-11">Dealing with failures in distributed systems</a>
 
 ## 1. <a id="section-1">Introduction</a>
 
@@ -244,7 +245,30 @@ It's important to consider the trade-offs associated with each mechanism. Lock-b
 
 The choice of mechanism depends on the specific requirements of the application, the workload characteristics, and the desired balance between consistency and concurrency. It's essential to carefully evaluate the trade-offs and choose the most suitable mechanism to achieve the desired isolation level while ensuring optimal system performance.
 
-## 10. <a id="section-10">Dealing with failures in distributed systems</a>
+
+## 10. <a id="section-10">Consensus</a>
+Consensus algorithms are essential in distributed systems, whether they are private systems with machines belonging to a single owner or decentralized systems involving multiple independent entities. The primary purpose of consensus algorithms is to enable these distributed systems to reach an agreement among multiple nodes or processes on a common decision or state, even in the presence of failures or network partitions.
+
+In distributed systems, individual nodes operate independently and may have different views of the system or its data. Achieving consensus ensures that all nodes converge to a consistent state and agree on important aspects such as the order of operations or the value of a particular data item. Consensus is crucial for maintaining system integrity, ensuring data consistency, and enabling coordinated actions across multiple nodes.
+
+In private distributed systems, consensus algorithms provide a means for nodes belonging to a single owner to agree on critical decisions. For example, in a cluster of servers, consensus algorithms can be used to elect a leader node, determine the order of data updates, or agree on a common configuration. By reaching consensus, private systems can operate cohesively and avoid conflicts or inconsistent states that could arise due to independent decision-making by individual nodes.
+
+On the other hand, consensus algorithms play a crucial role in decentralized systems, where multiple independent entities participate in a distributed network. These entities may have different owners, objectives, and levels of trust. Consensus allows these entities to work together, establish agreement, and enable decentralized coordination without relying on a central authority. Examples of decentralized systems include blockchain networks, peer-to-peer networks, and distributed ledgers.
+
+Decentralized systems often face challenges such as malicious actors, Byzantine failures, or the absence of a trusted central authority. Consensus algorithms address these challenges by providing mechanisms to validate and agree on the correctness of transactions, prevent double-spending, or ensure the consistency of the shared ledger. Through consensus, decentralized systems achieve trust, transparency, and immutability, enabling applications like cryptocurrencies, smart contracts, and distributed databases.
+
+Some common examples of scenarios where consensus algorithms are commonly used:
+
+- Distributed Databases: In a distributed database system, multiple nodes store and manage data across different locations. Consensus algorithms are used to ensure that all nodes agree on the order and consistency of data updates. This enables data replication, fault tolerance, and ensures that queries return consistent results across all nodes.
+
+- Blockchain Networks: Blockchain networks are decentralized systems where multiple nodes participate in the validation and agreement of transactions. Consensus algorithms, such as Proof of Work (PoW) or Proof of Stake (PoS), are used to achieve agreement on the order and validity of transactions, as well as to prevent malicious activities like double-spending.
+
+- Distributed File Systems: In distributed file systems, files are stored across multiple nodes for fault tolerance and improved performance. Consensus algorithms help ensure that all nodes agree on the availability, integrity, and consistency of files. This allows for reliable data storage and retrieval in the face of failures or network partitions.
+
+- Decentralized Governance: In decentralized governance models, consensus algorithms play a crucial role in decision-making and voting processes. They allow participants to agree on proposals, rule changes, or the election of representatives in a transparent and secure manner.
+
+
+## 10. <a id="section-11">Dealing with failures in distributed systems</a>
 Fault tolerance is a key aspect of dealing with failures in distributed systems. It refers to the ability of a system to continue operating and providing its services in the presence of failures. Fault tolerance mechanisms aim to minimize the impact of failures, ensure system availability, and maintain the desired level of performance and functionality.
 
 Some strategies may include:
@@ -265,9 +289,3 @@ Fault detection involves identifying abnormal behavior, errors, or failures in t
 - Distributed Tracing: Employing distributed tracing techniques to trace and monitor the flow of requests and responses across the distributed system. This can help identify performance bottlenecks, failures, or latency issues.
 
 - Log Analysis: Analyzing system logs to detect anomalies, errors, or patterns that indicate potential failures or issues in the system.
-
-### Consensus 
-Consensus is a fundamental mechanism used in distributed systems to achieve agreement among multiple nodes or processes, even in the presence of failures or network partitions. Consensus algorithms enable distributed nodes to work together to reach a common decision or state, ensuring that all nodes agree on the order of operations or the value of a particular data item.
-
-Consensus is crucial in distributed systems because it helps maintain system integrity, ensures data consistency, and allows for coordinated actions across multiple nodes.
-
