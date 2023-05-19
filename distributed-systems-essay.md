@@ -257,6 +257,7 @@ On the other hand, consensus algorithms play a crucial role in decentralized sys
 
 Decentralized systems often face challenges such as malicious actors, Byzantine failures, or the absence of a trusted central authority. Consensus algorithms address these challenges by providing mechanisms to validate and agree on the correctness of transactions, prevent double-spending, or ensure the consistency of the shared ledger. Through consensus, decentralized systems achieve trust, transparency, and immutability, enabling applications like cryptocurrencies, smart contracts, and distributed databases.
 
+### Scenarios
 Some common examples of scenarios where consensus algorithms are commonly used:
 
 - Distributed Databases: In a distributed database system, multiple nodes store and manage data across different locations. Consensus algorithms are used to ensure that all nodes agree on the order and consistency of data updates. This enables data replication, fault tolerance, and ensures that queries return consistent results across all nodes.
@@ -266,6 +267,15 @@ Some common examples of scenarios where consensus algorithms are commonly used:
 - Distributed File Systems: In distributed file systems, files are stored across multiple nodes for fault tolerance and improved performance. Consensus algorithms help ensure that all nodes agree on the availability, integrity, and consistency of files. This allows for reliable data storage and retrieval in the face of failures or network partitions.
 
 - Decentralized Governance: In decentralized governance models, consensus algorithms play a crucial role in decision-making and voting processes. They allow participants to agree on proposals, rule changes, or the election of representatives in a transparent and secure manner.
+
+### Consensus algorithms
+It's worth noting that consensus algorithms can vary in terms of their assumptions, guarantees, and trade-offs. The choice of a consensus algorithm depends on the specific requirements of the system, the level of fault tolerance desired, the network model, and the desired performance characteristics. Here are some notable examples:
+
+- Paxos: Paxos is a widely recognized consensus algorithm designed to tolerate failures and reach agreement in a distributed system. It guarantees safety (consistency) and liveness (progress) even in the presence of failures. Paxos is often used as a foundational algorithm for building distributed systems and has influenced many subsequent consensus protocols.
+
+- Raft: Raft is a consensus algorithm that provides a more understandable and approachable alternative to Paxos. It was designed with simplicity in mind and focuses on ease of understanding and implementation. Raft divides the consensus problem into leader election, log replication, and safety properties, making it easier to reason about and implement distributed systems.
+
+- Byzantine Fault Tolerant (BFT) algorithms: Byzantine fault-tolerant algorithms, including Practical Byzantine Fault Tolerance (PBFT), are designed to handle Byzantine faults where nodes can exhibit arbitrary behavior, including malicious actions. These algorithms provide high fault tolerance in distributed systems and are used in blockchain networks, distributed databases, and other applications where security and consensus are crucial.
 
 
 ## 10. <a id="section-11">Dealing with failures in distributed systems</a>
