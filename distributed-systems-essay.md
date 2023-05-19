@@ -278,7 +278,7 @@ It's worth noting that consensus algorithms can vary in terms of their assumptio
 - Byzantine Fault Tolerant (BFT) algorithms: Byzantine fault-tolerant algorithms, including Practical Byzantine Fault Tolerance (PBFT), are designed to handle Byzantine faults where nodes can exhibit arbitrary behavior, including malicious actions. These algorithms provide high fault tolerance in distributed systems and are used in blockchain networks, distributed databases, and other applications where security and consensus are crucial.
 
 
-## 10. <a id="section-11">Dealing with failures in distributed systems</a>
+## 11. <a id="section-11">Dealing with failures in distributed systems</a>
 Fault tolerance is a key aspect of dealing with failures in distributed systems. It refers to the ability of a system to continue operating and providing its services in the presence of failures. Fault tolerance mechanisms aim to minimize the impact of failures, ensure system availability, and maintain the desired level of performance and functionality.
 
 Some strategies may include:
