@@ -116,7 +116,7 @@ First thing that may come to your mind are TCP (Transmission Control Protocol) a
 
 ![Sync/Async replication](/media/async-sync.png)
 <p align="center">
-  <img src="/media/async-sync.png" width="300" style="margin-bottom: 50px;">
+  <img src="/media/async-sync.png" style="margin-bottom: 50px; max-width: 600px;">
 </p>
 
 In the figure above user John Doe makes a request to Service 1. In order to process the user's request Service 1 has to make some computations or replicate data. The communication between Service 1 and Service 2 is synchronous, it will block until it has a confirmation from Service 2 in order to report back to user John Doe. On the other hand, communication with Service 3 is asynchronous, Service 1 sends the request but doesn't wait for the response. 
