@@ -11,8 +11,8 @@ Table of contents:
 7. <a href="#section-7">Communication methods in distributed systems</a>
 8. <a href="#section-8">Distributed systems concepts and challenges</a>
 9. <a href="#section-9">Transactions</a>
-9. <a href="#section-10">Consensus</a>
-10. <a href="#section-11">Dealing with failures in distributed systems</a>
+10. <a href="#section-10">Consensus</a>
+11. <a href="#section-11">Dealing with failures in distributed systems</a>
 
 ## 1. <a id="section-1">Introduction</a>
 
