@@ -115,9 +115,6 @@ There are different communication methods, each with its own set of trade-offs, 
 First thing that may come to your mind are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) when talking about async vs sync communications but they must not be confused one for another. TCP and UPD are transport protocols. TCP is a reliable, connection-oriented protocol that ensures data integrity and order of delivery, while UDP is an unreliable, connectionless protocol that provides faster delivery but does not guarantee data integrity nor order of delivery. For this reason, it is safe to assume a UDP connection is always going to imply an asynchronous communication whereas a TCP connection can either be sync or async. The only difference is whether the sender is going to wait for a response from the receiver or not. In the following example TCP may be used for both async and sync communications.
 
 ![Sync/Async replication](/media/async-sync.png)
-<p align="center">
-  <img src="/media/async-sync.png" style="margin-bottom: 50px; max-width: 600px;">
-</p>
 
 In the figure above user John Doe makes a request to Service 1. In order to process the user's request Service 1 has to make some computations or replicate data. The communication between Service 1 and Service 2 is synchronous, it will block until it has a confirmation from Service 2 in order to report back to user John Doe. On the other hand, communication with Service 3 is asynchronous, Service 1 sends the request but doesn't wait for the response. 
 
@@ -142,6 +139,9 @@ Liveness and safety are two fundamental properties used to reason about the corr
 The CAP theorem, also known as Brewer's theorem, is a fundamental concept in distributed systems that helps in understanding the trade-offs between three desirable properties: consistency, availability, and partition tolerance. 
 
 ![CAP Theorem](/media/cap.png)
+<p align="center">
+  <img src="/media/cap.png" style="margin-bottom: 50px; max-width: 600px;">
+</p>
 
 - Consistency: Consistency refers to the requirement that all nodes in a distributed system have the same view of the data at any given time. In other words, when a client reads data from one node, any subsequent reads from other nodes should return the same value or a consistent state. Strong consistency models, such as linearizability, provide globally consistent results. However, achieving strong consistency may come at the cost of availability or increased latency in the face of network partitions or failures.
 
