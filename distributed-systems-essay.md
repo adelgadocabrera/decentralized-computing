@@ -140,7 +140,7 @@ The CAP theorem, also known as Brewer's theorem, is a fundamental concept in dis
 
 ![CAP Theorem](/media/cap.png)
 <p align="center">
-  <img src="/media/cap.png" style="margin-bottom: 50px; max-width: 600px;">
+  <img src="/media/cap.png" style="margin-bottom: 50px; max-width: 400px;">
 </p>
 
 - Consistency: Consistency refers to the requirement that all nodes in a distributed system have the same view of the data at any given time. In other words, when a client reads data from one node, any subsequent reads from other nodes should return the same value or a consistent state. Strong consistency models, such as linearizability, provide globally consistent results. However, achieving strong consistency may come at the cost of availability or increased latency in the face of network partitions or failures.
